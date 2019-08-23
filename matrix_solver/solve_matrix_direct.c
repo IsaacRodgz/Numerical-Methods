@@ -147,7 +147,6 @@ Matrix * solve_upper_triang(Matrix *A, Matrix *b, int fill_diag){
 
     double sum;
     int rows = A->rows;
-    int cols = A->cols;
 
     // Vector of solution
     Matrix *x = malloc( sizeof( x ) );
@@ -590,10 +589,7 @@ Matrix * solve_inverse(Matrix *A){
 
 void factor_cholesky_modified(Matrix *A){
 
-    int rows = A->rows;
     int cols = A->cols;
-
-    double sum;
 
     for(int i = 0; i < cols; i++){
 
