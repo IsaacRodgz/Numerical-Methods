@@ -212,9 +212,9 @@ void test_solve_inverse(const char *matrix_filename){
     I->data = malloc( I->rows*I->cols*sizeof( I->data ) );
 
     for(int i = 0; i < I->rows; i++){
-        
+
         for(int j = 0; j < I->cols; j++){
-            
+
             if( i == j )
                 I->data[ i*I->cols + j ] = 1.0;
             else
@@ -241,10 +241,10 @@ void test_solve_cholesky_modified(const char *matrix_filename, const char *vecto
     b = read_matrix(vector_filename, 1);
     print_matrix(b);
 
-    factor_cholesky_modified(A);
+    x_solve = solve_cholesky_modified(A, b);
 
-    print_matrix(A);
-/*
+    //print_matrix(A);
+
     printf("\nSolution vector x:\n");
     print_matrix(x_solve);
 
@@ -255,7 +255,7 @@ void test_solve_cholesky_modified(const char *matrix_filename, const char *vecto
         printf("\nTest FAILED. A * x_solve != b for given A and b.\n");
     else
         printf("\nTest PASSED. A * x_solve = b for given A and b.\n");
-*/
+
 }
 
 void main(int argc, char* argv[]){
@@ -275,6 +275,6 @@ void main(int argc, char* argv[]){
 
     if(argc==3){
 
-        test_solve_doolittle(argv[1], argv[2]);
+        test_solve_cholesky_modified(argv[1], argv[2]);
     }
 }

@@ -387,7 +387,7 @@ void solve_gauss_elim_pivot(Matrix *A, Matrix *b, int *index_order){
             b->data[j] -= A->data[ j*cols + i ] * b->data[i];
         }
     }
-    
+
     free(pivot_index);
 }
 
@@ -599,12 +599,9 @@ void factor_cholesky_modified(Matrix *A){
 
         // D[i][i] = A[i][i] - Sum_(k=1 to i-1){L[i][k]^2*D[k][k]}
 
-        if( i > 0 ){
+        for(int k = 0; k < i; k++){
 
-            for(int k = 0; k < i-1; k++){
-
-                A->data[ i*(cols+1) ] -= (A->data[ i*cols + k ] * A->data[ i*cols + k ] * A->data[ i*(cols+1) ]);
-            }
+            A->data[ i*(cols+1) ] -= (A->data[ i*cols + k ] * A->data[ i*cols + k ] * A->data[ k*(cols+1) ]);
         }
 
         for(int j = i + 1; j < cols; j++){
@@ -613,7 +610,7 @@ void factor_cholesky_modified(Matrix *A){
 
             A->data[ j*cols + i ] /= A->data[ i*(cols+1) ];
 
-            for(int k = 0; k < i-1; k++){
+            for(int k = 0; k < i; k++){
 
                 A->data[ j*cols + i ] -= ( ( A->data[ j*cols + k ] * A->data[ i*cols + k ] * A->data[ k*(cols+1) ] ) / A->data[ i*(cols+1) ] );
             }

@@ -44,7 +44,7 @@ Matrix * solve_doolittle(Matrix *A, Matrix *b, int factor_flag);
 
 Matrix * solve_inverse(Matrix *A);
 
-void factor_cholesky(Matrix *A);
+void factor_cholesky_modified(Matrix *A);
 
 Matrix * solve_cholesky_modified(Matrix *A, Matrix *b);
 
