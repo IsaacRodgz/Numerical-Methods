@@ -16,4 +16,6 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
 
 double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol );
 
+double newtonSolver( double (*f)(double), double (*fp)(double), double x0, double tol, double epsilon, int numIter );
+
 #endif

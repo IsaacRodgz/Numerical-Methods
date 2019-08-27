@@ -188,6 +188,11 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
 
 double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol ){
 
+    if( f(xmin)*f(xmax) >= 0 ){
+        printf("\nBisection method fails\n");
+        exit(-1);
+    }
+
     double xmid;
 
     while ( (xmax - xmin) > tol ) {
@@ -198,11 +203,51 @@ double bisectionSolver( double (*f)(double), double xmin, double xmax, double to
 
             xmax = xmid;
 
-        } else {
+        } else if ( f(xmid) * f(xmax) < 0 ){
 
             xmin = xmid;
+
+        } else if ( f(xmid) * f(xmax) < 0 ){
+
+            return xmid;
+
+        } else {
+
+            printf("\nBisection method fails\n");
+            exit(-1);
+
         }
     }
 
     return (xmin + xmax) / 2;
+}
+
+double newtonSolver( double (*f)(double), double (*fp)(double), double x0, double tol, double epsilon, int numIter ){
+
+    double xn;
+
+    for (int i = 0; i < numIter; i++) {
+
+        double y  = f(x0);
+        double yp  = fp(x0);
+
+        if ( fabs( yp ) <= epsilon ) {
+            printf("\nSolution did not converge\n");
+            exit(-1);
+        }
+
+        xn = x0 - y/yp;
+
+        if ( fabs( xn - x0 ) < tol ) {
+
+            printf("\nSolution converged at iteration: %d\n", i+1);
+            return xn;
+        }
+
+        x0 = xn;
+    }
+
+    printf("Solution did not converge\n");
+
+    return xn;
 }
