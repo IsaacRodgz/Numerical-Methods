@@ -1,20 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../solve_iterative.h"
-
-double polynomial4(double x){
-
-    // f(x) = x^4 - 5x^2 - x - 3
-
-    return (x*x*x*x) - 5*(x*x) - x - 3;
-}
-
-double squareRoot(double x){
-
-    // f(x) = x^2 - 2
-
-    return x*x - 2;
-}
+#include "../plot.h"
 
 void test_solve_bisection(){
 
@@ -27,6 +14,14 @@ void test_solve_bisection(){
     printf("\n----------------------------------------------------\n");
     printf("\nRoot found by bisection method, x_solve: %lf\n\n", x_solve);
     printf("----------------------------------------------------\n\n");
+
+    printf("Plotting result...\n\n");
+
+    double xRangeMin = -2.0;
+    double xRangeMax = 2.0;
+    int nIntervals = 1000;
+
+    plotData(squareRoot, xRangeMin, xRangeMax, nIntervals, x_solve);
 
 }
 
