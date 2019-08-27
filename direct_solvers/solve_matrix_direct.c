@@ -3,23 +3,6 @@ Author: Isaac Rodríguez Bribiesca
 Date: 2019-08-12
 Description: Pogram that solves system A*x = b of n equations with n variables,
 through different methods.
-
-Input:
-
-    double *A : Pointer to matrix of nxn dimensions
-    double *b : Pointer to array of n dimensions
-    int n : Size of matrix A and array b
-
-Output:
-
-    double *x : Pointer to array of solution x
-
-Methods included:
-
-    - Diagonal matrix (solve_diagonal)
-    - Lower triangular matrix (solve_lower_triang)
-    - Upper triangular (solve_upper_triang)
-
 */
 
 #include <stdlib.h>
@@ -29,6 +12,8 @@ Methods included:
 #include "matrix_struct.h"
 #define TRUE 1
 #define FALSE 0
+
+//Verify if A is diagonal
 
 int is_diagonal(Matrix *A){
 
@@ -43,6 +28,8 @@ int is_diagonal(Matrix *A){
     return TRUE;
 }
 
+// Solve linear system where A is a diagonal matrix
+
 Matrix * solve_diagonal(Matrix *A, Matrix *b){
 
     if( A->rows != A->cols ){
@@ -51,7 +38,7 @@ Matrix * solve_diagonal(Matrix *A, Matrix *b){
         exit(-1);
     }
 
-    if( is_diagonal(A) != TRUE ){
+    if( is_diagonal(A) == FALSE ){
 
         printf("\nThere are diagonal elements equal to zero. System cannot be solved.\n\n");
         exit(-1);
@@ -77,6 +64,8 @@ Matrix * solve_diagonal(Matrix *A, Matrix *b){
     return x;
 }
 
+// Solve linear system where A is a lower triangular matrix
+
 Matrix * solve_lower_triang(Matrix *A, Matrix *b, int fill_diag){
 
     if( A->rows != A->cols ){
@@ -85,7 +74,7 @@ Matrix * solve_lower_triang(Matrix *A, Matrix *b, int fill_diag){
         exit(-1);
     }
 
-    if( is_diagonal(A) != TRUE ){
+    if( is_diagonal(A) == FALSE ){
 
         printf("\nThere are diagonal elements equal to zero. System cannot be solved.\n\n");
         exit(-1);
@@ -131,6 +120,8 @@ Matrix * solve_lower_triang(Matrix *A, Matrix *b, int fill_diag){
     return x;
 }
 
+// Solve linear system where A is a upper triangular matrix
+
 Matrix * solve_upper_triang(Matrix *A, Matrix *b, int fill_diag){
 
     if( A->rows != A->cols ){
@@ -139,7 +130,7 @@ Matrix * solve_upper_triang(Matrix *A, Matrix *b, int fill_diag){
         exit(-1);
     }
 
-    if( is_diagonal(A) != TRUE ){
+    if( is_diagonal(A) == FALSE ){
 
         printf("\nThere are diagonal elements equal to zero. System cannot be solved.\n\n");
         exit(-1);
@@ -184,6 +175,8 @@ Matrix * solve_upper_triang(Matrix *A, Matrix *b, int fill_diag){
     return x;
 }
 
+// Determinant equivalent to multiplication of diagonal elements of A
+
 double diagonal_determinant(Matrix *A){
 
     int rows = A->rows;
@@ -196,6 +189,8 @@ double diagonal_determinant(Matrix *A){
 
     return determinant;
 }
+
+// Helper function to exchange rows and columns from index: (i_switch, j_switch) to index: (index_set, index_set)
 
 void set_pivot(Matrix *A, Matrix *b, int *index_order, int i_switch, int j_switch, int index_set){
 
@@ -239,6 +234,10 @@ void set_pivot(Matrix *A, Matrix *b, int *index_order, int i_switch, int j_switc
 
     if(j_switch != index_set){
 
+        // Change in determinant sign
+
+        index_order[cols] *= -1;
+
         // Register order change in x_i
 
         x_temp = index_order[j_switch];
@@ -258,6 +257,8 @@ void set_pivot(Matrix *A, Matrix *b, int *index_order, int i_switch, int j_switc
     }
 
 }
+
+// Helper function to get the indexes of maximum element (in absolute value) of matrix A
 
 int * max_pivot_index(Matrix *A, int limit, int *max_ij){
 
@@ -281,6 +282,8 @@ int * max_pivot_index(Matrix *A, int limit, int *max_ij){
 
     return max_ij;
 }
+
+// Helper function to perform Gaussian elimination with no pivoting
 
 void solve_gauss_elim(Matrix *A, Matrix *b){
 
@@ -327,6 +330,8 @@ void solve_gauss_elim(Matrix *A, Matrix *b){
     }
 }
 
+// Helper function to perform Gaussian elimination with pivoting
+
 void solve_gauss_elim_pivot(Matrix *A, Matrix *b, int *index_order){
 
     if( A->rows != A->cols ){
@@ -346,17 +351,9 @@ void solve_gauss_elim_pivot(Matrix *A, Matrix *b, int *index_order){
         // Find index pair (i,j) of max element from A
 
         max_pivot_index(A, i, pivot_index);
-        /*
-        printf("\n--------------------------------------------------\n");
-        printf("\nmax[%d]: %f\n", cols*pivot_index[0] + pivot_index[1], A->data[cols*pivot_index[0] + pivot_index[1]]);// print max elem
-        printf("\nbefore pivoting:\n");
-        print_matrix(A);
-        */
+
         set_pivot(A, b, index_order, pivot_index[0], pivot_index[1], i);
-        /*
-        printf("\nafter pivoting:\n");
-        print_matrix(A);
-        */
+
         if( A->data[ i*(cols+1) ] == 0.0 ){
             printf("\nMatrix is singular, cannot solve system\n");
             exit(-1);
@@ -390,6 +387,8 @@ void solve_gauss_elim_pivot(Matrix *A, Matrix *b, int *index_order){
     free(pivot_index);
 }
 
+// Solve linear system through gauss elimination with no pivoting
+
 Matrix * solve_no_pivot(Matrix *A, Matrix *b){
 
     // Reduce matrix A to upper triangular through Gaussian elimination without pivoting (with the respective changes to b)
@@ -400,6 +399,8 @@ Matrix * solve_no_pivot(Matrix *A, Matrix *b){
 
     return solve_upper_triang(A, b, 0);
 }
+
+// Solve linear system through gauss elimination with pivoting
 
 Matrix * solve_pivot(Matrix *A, Matrix *b){
 
@@ -428,9 +429,9 @@ Matrix * solve_pivot(Matrix *A, Matrix *b){
 
     // Initialize x indexes with 0, 1, ..., n to register change in pivot of columns. index_order[n] registers the sign for determinant
 
-    for(int i = 0; i < cols; i++)
+    for(int i = 0; i < rows; i++)
         index_order[i] = i;
-    index_order[cols] = 1;
+    index_order[rows] = 1;
 
     // Reduce matrix A to upper triangular through Gaussian elimination with complete pivoting (with the respective changes to b)
 
@@ -445,11 +446,18 @@ Matrix * solve_pivot(Matrix *A, Matrix *b){
     for(int i = 0; i < cols; i++)
         x_solve_ordered->data[ index_order[i] ] = x_solve->data[i];
 
+    
+    printf("-----------------------------------------------------------\n\n");
+
+    printf("Determinant of A: %f\n\n", index_order[rows]*diagonal_determinant(A));
+
     free(index_order);
     free(x_solve);
 
     return x_solve_ordered;
 }
+
+// Helper function to factor matrix A into L*U with Doolittle
 
 void factor_doolittle(Matrix *A){
 
@@ -493,6 +501,8 @@ void factor_doolittle(Matrix *A){
     }
 }
 
+// Solve linear system through Doolittle factorization
+
 Matrix * solve_doolittle(Matrix *A, Matrix *b, int factor_flag){
 
     int rows = A->rows;
@@ -524,6 +534,8 @@ Matrix * solve_doolittle(Matrix *A, Matrix *b, int factor_flag){
 
     return x_solve;
 }
+
+// Find inverse of matrix A through Doolittle
 
 Matrix * solve_inverse(Matrix *A){
 
@@ -587,6 +599,24 @@ Matrix * solve_inverse(Matrix *A){
     return inverse_A;
 }
 
+// Helper function to verify if A is symmetric
+
+int is_simetric(Matrix *A){
+
+    for(int i = 0; i < A->rows; i++){
+
+        for(int j = 0; j < A->cols; j++){
+
+            if(A->data[ i*A->rows + j ] != A->data[ j*A->rows + i ])
+                return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
+// Helper function to factor matrix A into L*D*L^T with modified Cholesky
+
 void factor_cholesky_modified(Matrix *A){
 
     int cols = A->cols;
@@ -618,7 +648,17 @@ void factor_cholesky_modified(Matrix *A){
     }
 }
 
+// Solve linear system through modified Cholesky factorization
+
 Matrix * solve_cholesky_modified(Matrix *A, Matrix *b){
+
+    // Verify that A is simetric
+
+    if( is_simetric(A) == FALSE){
+
+        printf("\nA is not symmetric. System cannot be solved by modified Cholesky factorization.\n\n");
+        exit(-1);
+    }
 
     int rows = A->rows;
 

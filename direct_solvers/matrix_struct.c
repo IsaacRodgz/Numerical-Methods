@@ -6,9 +6,6 @@
 
 Matrix * read_matrix(const char *filename, int verbose){
 
-    if(verbose != 0)
-        printf("Read file: %s\n", filename);
-
     FILE *file = fopen( filename, "r");
 
     if(file == NULL){
@@ -118,6 +115,8 @@ Matrix * multiply(Matrix *x, Matrix *y){
     return z;
 }
 
+// Compare element-wise Matrix x and x_solve with tolerance epsilon
+
 int equals(Matrix *x, Matrix *x_solve, double epsilon){
 
     int rows = x->rows;
@@ -135,4 +134,20 @@ int equals(Matrix *x, Matrix *x_solve, double epsilon){
     }
 
     return 1;
+}
+
+// Copy content of vector x into y
+
+void copy(Matrix *x, Matrix *y){
+
+    int rows = x->rows;
+    int cols = x->cols;
+
+    for(int i = 0; i < rows; i++){
+
+        for(int j = 0; j < cols; j++){
+
+            y->data[ i*cols + j ] = x->data[ i*cols + j ];
+        }
+    }
 }

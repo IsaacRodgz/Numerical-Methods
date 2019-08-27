@@ -16,4 +16,6 @@ Matrix * multiply(Matrix *x, Matrix *y);
 
 int equals(Matrix *x, Matrix *x_solve, double epsilon);
 
+void copy(Matrix *x, Matrix *y);
+
 #endif
