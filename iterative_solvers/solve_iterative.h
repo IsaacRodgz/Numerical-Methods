@@ -14,4 +14,6 @@ Matrix * jacobiSolver(Matrix * A, Matrix * b, int num_iters, double tolerance);
 
 Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double tolerance);
 
+double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol );
+
 #endif

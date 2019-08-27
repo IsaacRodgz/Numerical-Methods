@@ -185,3 +185,24 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
 
     return x_new;
 }
+
+double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol ){
+
+    double xmid;
+
+    while ( (xmax - xmin) > tol ) {
+
+        xmid = (xmin + xmax) / 2;
+
+        if ( f(xmid) * f(xmin) < 0 ) {
+
+            xmax = xmid;
+
+        } else {
+
+            xmin = xmid;
+        }
+    }
+
+    return (xmin + xmax) / 2;
+}
