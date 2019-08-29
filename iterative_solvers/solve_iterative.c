@@ -251,3 +251,36 @@ double newtonSolver( double (*f)(double), double (*fp)(double), double x0, doubl
 
     return xn;
 }
+
+void normalizeVector(Matrix * vect){
+
+    double sum = 0;
+
+    for (int i = 0; i < vect->rows; i++) {
+        sum += vect->data[i];
+    }
+
+    if ( (sum = sqrt(sum)) == 0.0 ) {
+        fprintf(stderr, "\n[Error] Vector of norm 0 found\n\n");
+    }
+
+    for (int i = 0; i < vect->rows; i++) {
+        vect->data[i] *= (1/sum);
+    }
+}
+
+void powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double tolerance){
+
+    int rows = A->rows;
+
+    Matrix *eigenVectNew = malloc( sizeof( eigenVectNew ) );
+
+    for (int i = 0; i < num_iters; i++) {
+
+        normalizeVector(eigenVectOld);
+        eigenVectNew = multiply(A, eigenVectOld);
+
+        
+    }
+
+}
