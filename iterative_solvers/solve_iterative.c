@@ -269,9 +269,14 @@ void normalizeVector(Matrix * vect){
     }
 }
 
-void powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double tolerance){
+double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double tolerance, double epsilon){
 
     int rows = A->rows;
+    double lambdaNew;
+    double numerator;
+    double denominator;
+    double* lambdaTrace = malloc( num_iters * sizeof( *lambdaTrace ) );
+    int lambdaTraceSize = 0;
 
     Matrix *eigenVectNew = malloc( sizeof( eigenVectNew ) );
 
@@ -280,7 +285,31 @@ void powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_
         normalizeVector(eigenVectOld);
         eigenVectNew = multiply(A, eigenVectOld);
 
-        
-    }
+        numerator = 0;
+        denominator = 0;
 
+        for (int j = 0; j < rows; j++) {
+
+            numerator += eigenVectNew->data[j] * eigenVectNew->data[j];
+            denominator += eigenVectNew->data[j] * eigenVectOld->data[j];
+        }
+
+        if ( denominator > tolerance )
+            lambdaNew = numerator / denominator;
+        else{
+            fprintf(stderr, "\n[Error]: denominator close or equal to zero\n\n", );
+        }
+
+        if ( fabs( lambdaNew - lambdaInit ) < epsilon ) {
+            *lambdaInit = lambdaNew;
+            break;
+        }
+        else{
+            lambdaTrace[i] = lambdaNew
+            *lambdaInit = lambdaNew;
+            // TODO: SWAP( eigenVectNew, eigenVectOld )
+        }
+    }
+    // TODO: Plot lambda values
+    return lambdaTrace;
 }
