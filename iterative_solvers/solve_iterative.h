@@ -16,7 +16,7 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
 
 void normalizeVector(Matrix * vect);
 
-void powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double tolerance);
+double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double tolerance, double epsilon);
 
 double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol );
 
