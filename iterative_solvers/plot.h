@@ -10,7 +10,9 @@ through two different iterative methodos methods, namely, Jacobi and Gauss-Seide
 
 #include "plot.h"
 
-void plotData( double (*f)(double), double xmin, double xmax, int nIntervals, double xSolution);
+void plotFunction( double (*f)(double), double xmin, double xmax, int nIntervals, double xSolution);
+
+void plotData( double * data, int size );
 
 double polynomial4(double x);
 

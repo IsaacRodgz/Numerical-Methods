@@ -30,7 +30,7 @@ double squareRootP(double x){
     return 2*x;
 }
 
-void plotData( double (*f)(double), double xmin, double xmax, int nIntervals, double xSolution){
+void plotFunction( double (*f)(double), double xmin, double xmax, int nIntervals, double xSolution){
 
     double stepSize = (xmax - xmin) / nIntervals;
 
@@ -91,6 +91,49 @@ void plotData( double (*f)(double), double xmin, double xmax, int nIntervals, do
 
         remove(tempDataFileName);
         remove(tempSolutionFileName);
+        fprintf(gnuplotPipe,"exit \n");
+
+    } else {
+
+        printf("gnuplot not found...");
+    }
+}
+
+void plotData( double * data, int size ){
+
+    FILE *gnuplotPipe, *tempDataFile, *tempSolutionFile;
+    char *tempDataFileName;
+
+    tempDataFileName = "Data";
+    gnuplotPipe = popen("gnuplot -persist","w");
+
+    if (gnuplotPipe) {
+
+        fprintf(gnuplotPipe,"set title \"Data\"\n");
+        fprintf(gnuplotPipe,"set xlabel \"x\"\n");
+        fprintf(gnuplotPipe,"set yrange [0.5:-0.5]\n");
+
+        // Draw x axis
+        fprintf(gnuplotPipe,"set arrow from %lf,0 to %lf,0 nohead\n", data[0], data[size-1]);
+
+        fprintf(gnuplotPipe,"plot \"%s\" with points lc rgb \"red\"\n", tempDataFileName);
+        fflush(gnuplotPipe);
+
+        // Write data: "x f(x)" to file tempSolutionFileName
+
+        tempDataFile = fopen(tempDataFileName, "w");
+
+        for (int i = 0; i < size; i++) {
+
+            fprintf(tempDataFile,"%lf %lf\n", data[i], 0.0);
+        }
+
+        fclose(tempDataFile);
+
+        printf("press enter to continue...");
+        getchar();
+
+        remove(tempDataFileName);
         fprintf(gnuplotPipe,"exit \n");
 
     } else {

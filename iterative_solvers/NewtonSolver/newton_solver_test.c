@@ -23,7 +23,7 @@ void test_solve_newton(){
     double xRangeMax = 2.0;
     int nIntervals = 1000;
 
-    plotData(squareRoot, xRangeMin, xRangeMax, nIntervals, x_solve);
+    plotFunction(squareRoot, xRangeMin, xRangeMax, nIntervals, x_solve);
 
 }
 

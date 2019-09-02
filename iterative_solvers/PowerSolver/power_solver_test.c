@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "../solve_iterative.h"
 #include "../matrix_struct.h"
+#include "../plot.h"
 
 void test_solve_power(const char *matrix_filename){
 
@@ -24,11 +25,15 @@ void test_solve_power(const char *matrix_filename){
     int numIters = 200;
     double epsilon = 0.0000001;
 
-    powerSolver(A, eigenVec, &eigenVal, numIters, epsilon);
+    double* lambdaTrace;
+
+    lambdaTrace = powerSolver(A, eigenVec, &eigenVal, numIters, epsilon);
 
     printf("Dominant eigenvalue found: %lf\n", eigenVal);
     printf("\nDominant eigenvector found:\n");
     print_matrix( eigenVec );
+
+    plotData( lambdaTrace, numIters );
 
 }
 
