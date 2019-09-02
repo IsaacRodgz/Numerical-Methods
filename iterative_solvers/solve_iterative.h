@@ -14,9 +14,11 @@ Matrix * jacobiSolver(Matrix * A, Matrix * b, int num_iters, double tolerance);
 
 Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double tolerance);
 
-void normalizeVector(Matrix * vect);
+double vectNorm(Matrix* vect);
 
-double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double tolerance, double epsilon);
+void swap(Matrix ** A, Matrix ** B);
+
+double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon);
 
 double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol );
 

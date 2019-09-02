@@ -5,22 +5,30 @@
 
 void test_solve_power(const char *matrix_filename){
 
-    Matrix *A;
     printf("\nRead matrix A");
+    Matrix *A;
     A = read_matrix(matrix_filename, 1);
     print_matrix(A);
 
-
+    // Vector that will contain the dominant eigenvetor corresponding to the dominant eigenvalue found
     Matrix *eigenVec = malloc( sizeof( eigenVec ) );
     eigenVec->rows = A->rows;
     eigenVec->cols = 1;
     eigenVec->data = malloc( eigenVec->rows * eigenVec->cols * sizeof( eigenVec->data ) );
 
+    for (size_t i = 0; i < eigenVec->rows; i++) {
+        eigenVec->data[i] = 1.0;
+    }
+
     double eigenVal = 0.0;
+    int numIters = 200;
+    double epsilon = 0.0000001;
 
-    powerSolver(A, eigenVec, &eigenVal, 1000, 0.000000001);
+    powerSolver(A, eigenVec, &eigenVal, numIters, epsilon);
 
-    printf("Eigenvalue found: %lf\n\n", eigenVal);
+    printf("Dominant eigenvalue found: %lf\n", eigenVal);
+    printf("\nDominant eigenvector found:\n");
+    print_matrix( eigenVec );
 
 }
 

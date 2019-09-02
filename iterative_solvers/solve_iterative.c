@@ -252,64 +252,91 @@ double newtonSolver( double (*f)(double), double (*fp)(double), double x0, doubl
     return xn;
 }
 
-void normalizeVector(Matrix * vect){
+double vectNorm(Matrix* vect){
 
     double sum = 0;
 
     for (int i = 0; i < vect->rows; i++) {
-        sum += vect->data[i];
+        sum += ( vect->data[i] * vect->data[i] );
     }
 
-    if ( (sum = sqrt(sum)) == 0.0 ) {
+    if ( sum == 0.0 ) {
         fprintf(stderr, "\n[Error] Vector of norm 0 found\n\n");
     }
 
-    for (int i = 0; i < vect->rows; i++) {
-        vect->data[i] *= (1/sum);
-    }
+    return sqrt(sum);
+
 }
 
-double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double tolerance, double epsilon){
+void swap(Matrix ** A, Matrix ** B){
 
+    Matrix* temp = *A;
+    *A = *B;
+    *B = temp;
+
+}
+
+double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon){
+
+    // Size of matrix and vectors
     int rows = A->rows;
+
+    // Variable to update dominant eigenvalue
     double lambdaNew;
-    double numerator;
-    double denominator;
+
+    // Helper variable for dot product of vectors
+    double accum;
+
+    // Array to plot convergence of eigenvalue calculated
     double* lambdaTrace = malloc( num_iters * sizeof( *lambdaTrace ) );
     int lambdaTraceSize = 0;
 
+    // Variable to iterate algorithm
+    int i = 0;
+
+    // Vector to calculate A * v_(k-1)
     Matrix *eigenVectNew = malloc( sizeof( eigenVectNew ) );
 
-    for (int i = 0; i < num_iters; i++) {
+    // Normalize initial vector v_0
+    double norm = vectNorm(eigenVectOld);
+    for (int k = 0; k < rows; k++)
+        eigenVectOld->data[k] *= (1/norm);
 
-        normalizeVector(eigenVectOld);
+    // Start iterations
+
+    for (i = 0; i < num_iters; i++) {
+
+        // Calculate w =  A * v_(k-1)
         eigenVectNew = multiply(A, eigenVectOld);
 
-        numerator = 0;
-        denominator = 0;
+        // Calculate v_(K) = w/norm(w)
+        norm = vectNorm(eigenVectNew);
+        for (int k = 0; k < rows; k++)
+            eigenVectOld->data[k] = eigenVectNew->data[k] * (1/norm);
+
+        // Calculate dominant eigenvalue and store in lambdaNew
+
+        accum = 0;
 
         for (int j = 0; j < rows; j++) {
-
-            numerator += eigenVectNew->data[j] * eigenVectNew->data[j];
-            denominator += eigenVectNew->data[j] * eigenVectOld->data[j];
+            accum += eigenVectNew->data[j] * eigenVectOld->data[j];
         }
 
-        if ( denominator > tolerance )
-            lambdaNew = numerator / denominator;
-        else{
-            fprintf(stderr, "\n[Error]: denominator close or equal to zero\n\n", );
-        }
+        lambdaNew = accum;
 
-        if ( fabs( lambdaNew - lambdaInit ) < epsilon ) {
-            *lambdaInit = lambdaNew;
+        // Check for convergence and stop or update the eigenvalue
+
+        if ( fabs( lambdaNew - (*lambdaInit) ) / lambdaNew < epsilon ) {
+            (*lambdaInit) = lambdaNew;
             break;
         }
         else{
-            lambdaTrace[i] = lambdaNew
-            *lambdaInit = lambdaNew;
-            // TODO: SWAP( eigenVectNew, eigenVectOld )
+            lambdaTrace[i] = lambdaNew;
+            (*lambdaInit) = lambdaNew;
         }
     }
-    // TODO: Plot lambda values
+
+    printf("\nConverged after %d iterations\n\n", i);
+
     return lambdaTrace;
 }
