@@ -22,6 +22,8 @@ void set_pivot(Matrix *A, Matrix *b, int *index_order, int i_switch, int j_switc
 
 int * max_pivot_index(Matrix *A, int limit, int *pivot_index);
 
+int max_pivot_index_column(Matrix *A, int limit);
+
 void solve_gauss_elim(Matrix *A, Matrix *b);
 
 void solve_gauss_elim_pivot(Matrix *A, Matrix *b, int *index_order);
@@ -32,7 +34,11 @@ Matrix * solve_pivot(Matrix *A, Matrix *b);
 
 void factor_doolittle(Matrix *A);
 
+void factor_doolittle_pivoting(Matrix *A, int *pivot);
+
 Matrix * solve_doolittle(Matrix *A, Matrix *b, int factor_flag);
+
+Matrix * solve_doolittle_pivoting(Matrix *A, Matrix *b, int *pivots);
 
 Matrix * solve_inverse(Matrix *A);
 

@@ -258,6 +258,33 @@ void set_pivot(Matrix *A, Matrix *b, int *index_order, int i_switch, int j_switc
 
 }
 
+// Helper function to exchange rows from index: i_switch to index: index_set
+
+void set_pivot_row(Matrix *A, int* pivot, int i_switch, int index_set){
+
+    int cols = A->cols;
+
+    // Helper array to switch row and columns of A
+
+    double buffer;
+
+    // Switch rows in A
+
+    for(int i = 0; i < cols; i++){
+
+        buffer = A->data[ i_switch*cols + i ];
+
+        A->data[ i_switch*cols + i ] = A->data[ index_set*cols + i ];
+
+        A->data[ index_set*cols + i ] = buffer;
+    }
+
+    int temp = pivot[i_switch];
+    pivot[i_switch] = pivot[index_set];
+    pivot[index_set] = temp;
+
+}
+
 // Helper function to get the indexes of maximum element (in absolute value) of matrix A
 
 int * max_pivot_index(Matrix *A, int limit, int *max_ij){
@@ -281,6 +308,27 @@ int * max_pivot_index(Matrix *A, int limit, int *max_ij){
     }
 
     return max_ij;
+}
+
+// Helper function to get the indexes of maximum element in current colum (in absolute value) of matrix A
+
+int max_pivot_index_column(Matrix *A, int limit){
+
+    int cols = A->cols;
+    int row = limit;
+    double max = 0;
+
+    for(int i = limit; i < cols; i++){
+
+        if( fabs( A->data[ i*cols + limit] ) > max){
+
+            max = fabs( A->data[ i*cols + limit] );
+            row = i;
+
+        }
+    }
+
+    return row;
 }
 
 // Helper function to perform Gaussian elimination with no pivoting
@@ -446,7 +494,7 @@ Matrix * solve_pivot(Matrix *A, Matrix *b){
     for(int i = 0; i < cols; i++)
         x_solve_ordered->data[ index_order[i] ] = x_solve->data[i];
 
-    
+
     printf("-----------------------------------------------------------\n\n");
 
     printf("Determinant of A: %f\n\n", index_order[rows]*diagonal_determinant(A));
@@ -501,6 +549,43 @@ void factor_doolittle(Matrix *A){
     }
 }
 
+// Helper function to factor matrix A into L*U with Doolittle and partial pivoting
+
+void factor_doolittle_pivoting(Matrix *A, int *pivot){
+
+    int cols = A->cols;
+    int current_pivot;
+
+    for (int i = 0; i < cols; i++)
+        pivot[i] = i;
+
+    for (int i = 0; i < cols; i++) {
+
+        current_pivot = max_pivot_index_column(A, i);
+
+        if ( A->data[ current_pivot*(cols+1) ] == 0.0 ) {
+            printf("\nThere are diagonal elements equal to zero. System cannot be solved\n\n");
+            exit(-1);
+        }
+
+        if ( current_pivot != i ) {
+
+            set_pivot_row(A, pivot, current_pivot, i);
+        }
+
+        for (int j = i + 1; j < cols; j++) {
+
+            A->data[ j*cols + i ] = A->data[ j*cols + i ] / A->data[ i*(cols+1) ];
+
+            for(int k = i + 1; k < cols; k++){
+
+                A->data[ j*cols + k ] -=  ( A->data[ j*cols + i ] * A->data[ i*cols + k ] );
+            }
+        }
+
+    }
+}
+
 // Solve linear system through Doolittle factorization
 
 Matrix * solve_doolittle(Matrix *A, Matrix *b, int factor_flag){
@@ -532,6 +617,70 @@ Matrix * solve_doolittle(Matrix *A, Matrix *b, int factor_flag){
 
     x_solve = solve_upper_triang(A, y, 0);
 
+    return x_solve;
+}
+
+Matrix * solve_doolittle_pivoting(Matrix *A, Matrix *b, int *pivots){
+
+    int rows = A->rows;
+    int* pivotsCopy = malloc( A->rows * sizeof *pivotsCopy );
+
+    for (int i = 0; i < rows; i++) {
+        pivotsCopy[i] = pivots[i];
+    }
+
+    // Solve L*y = b
+
+    double temp_d;
+    int temp_i;
+    for (int i = 0; i < rows; i++) {
+
+        if ( pivots[i] != i ) {
+
+            temp_d = b->data[i];
+            b->data[i] = b->data[ pivots[i] ];
+            b->data[ pivots[i] ] = temp_d;
+
+            temp_i = pivots[i];
+            pivots[i] = pivots[temp_i];
+            pivots[temp_i] = temp_i;
+        }
+    }
+
+    Matrix *y = malloc( sizeof( y ) );
+
+    y->rows = rows;
+    y->cols = 1;
+    y->data = malloc( y->rows*y->cols*sizeof( y->data ) );
+
+    y = solve_lower_triang(A, b, 1);
+
+    // Solve U*x = y
+
+    Matrix *x_solve = malloc( sizeof( x_solve ) );
+
+    x_solve->rows = rows;
+    x_solve->cols = 1;
+    x_solve->data = malloc( x_solve->rows*x_solve->cols*sizeof( x_solve->data ) );
+
+    x_solve = solve_upper_triang(A, y, 0);
+/*
+    // Recover order
+
+    for (int i = 0; i < rows; i++) {
+
+        if ( pivotsCopy[i] != i ) {
+
+            temp_d = x_solve->data[i];
+            x_solve->data[i] = x_solve->data[ pivotsCopy[i] ];
+            x_solve->data[ pivotsCopy[i] ] = temp_d;
+
+            temp_i = pivotsCopy[i];
+            pivotsCopy[i] = pivotsCopy[temp_i];
+            pivotsCopy[temp_i] = temp_i;
+        }
+    }
+*/
     return x_solve;
 }
 
