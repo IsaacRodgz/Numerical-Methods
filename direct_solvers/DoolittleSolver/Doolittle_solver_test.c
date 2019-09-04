@@ -37,7 +37,7 @@ void test_solve_doolittle(const char *matrix_filename, const char *vector_filena
 
     printf("\nSolution of system by Doolittle factorization, x_solve:\n");
     print_matrix(x_solve);
-
+*/
     // Read A and b again because solve_no_pivot() overwrites them
 
     A_temp = read_matrix(matrix_filename, 0);
@@ -52,7 +52,7 @@ void test_solve_doolittle(const char *matrix_filename, const char *vector_filena
     printf("-----------------------------------------------------------\n\n");
 
     printf("Determinant of A: %f\n\n", diagonal_determinant(A));
-*/
+
 }
 
 void main(int argc, char* argv[]){

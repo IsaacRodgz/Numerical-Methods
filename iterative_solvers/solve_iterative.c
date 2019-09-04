@@ -75,8 +75,8 @@ Matrix * jacobiSolver(Matrix * A, Matrix * b, int num_iters, double tolerance){
 
             x_new->data[i] = ( b->data[i] - sum ) / A->data[ i*(rows+1) ];
 
-            num_norm += pow( x_new->data[i] - x_old->data[i] , 2);
-            den_norm += pow(x_new->data[i], 2);
+            num_norm += (x_new->data[i] - x_old->data[i]) * (x_new->data[i] - x_old->data[i]);
+            den_norm += (x_new->data[i])*(x_new->data[i]);
         }
 
         error = sqrt(num_norm/den_norm);

@@ -37,16 +37,16 @@ Matrix * read_matrix(const char *filename, int verbose){
     if(A->cols == 1){
 
         for(i = 0; i < n; i++){
-            
+
             fscanf(file, "%lf ", (A->data + i));
         }
     }
     else{
 
         for(i = 0; i < n; i++){
-            
+
             for(j = 0; j < m-1; j++){
-                
+
                 fscanf(file, "%lf ", (A->data + m*i + j));
             }
 
@@ -86,7 +86,7 @@ Matrix * multiply(Matrix *x, Matrix *y){
         exit(-1);
         return NULL;
     }
-        
+
     // z = x*y
     Matrix *z = malloc( sizeof( z ) );
 
@@ -122,18 +122,19 @@ int equals(Matrix *x, Matrix *x_solve, double epsilon){
     int rows = x->rows;
     int cols = x->cols;
 
+    double sum = 0;
+    double diff;
+
     for(int i = 0; i < rows; i++){
 
-        for(int j = 0; j < rows; j++){
-
-            if( fabs( *( x->data + cols*i + j ) - *( x_solve->data + cols*i + j ) ) > epsilon ){
-
-                return 0;
-            }
-        }
+        diff = ( x->data[i] - x_solve->data[i] );
+        sum += diff * diff;
     }
 
-    return 1;
+    if( sqrt( sum ) < epsilon )
+        return 1;
+    else
+        return 0;
 }
 
 // Copy content of vector x into y
