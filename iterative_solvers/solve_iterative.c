@@ -111,14 +111,6 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
     x_new->cols = 1;
     x_new->data = malloc( x_new->rows * x_new->cols * sizeof( x_new->data ) );
 
-    // initialize x_old
-
-    Matrix *x_old = malloc( sizeof( x_old ) );
-
-    x_old->rows = rows;
-    x_old->cols = 1;
-    x_old->data = malloc( x_old->rows * x_old->cols * sizeof( x_old->data ) );
-
     // Helper variable for Sum(j=1 to n){ A[i][j] * x_old[j] }
 
     double sum;
@@ -132,9 +124,13 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
     double num_norm;
     double den_norm;
 
+    // Helper variable to calculate error ( x_new[i] - x_old[i] ) without needing X_old
+
+    double temp_x;
+
     // Initialize x_old with b
 
-    copy( b, x_old );
+    copy( b, x_new );
 
     for(int iter = 0; iter < num_iters; iter++){
 
@@ -155,16 +151,15 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
 
             for(int j = 0; j < rows; j++){
 
-                if(j < i)
+                if(j != i)
                     sum += A->data[ i*rows + j ] * x_new->data[j];
-                if(j > i)
-                    sum += A->data[ i*rows + j ] * x_old->data[j];
             }
 
-            x_new->data[i] = ( b->data[i] - sum ) / A->data[ i*(rows+1) ];
+            temp_x = ( b->data[i] - sum ) / A->data[ i*(rows+1) ];
 
-            num_norm += pow( x_new->data[i] - x_old->data[i] , 2);
-            den_norm += pow(x_new->data[i], 2);
+            num_norm += (temp_x - x_new->data[i]) * (temp_x - x_new->data[i]);
+            x_new->data[i] = temp_x;
+            den_norm += x_new->data[i] * x_new->data[i];
         }
 
         error = sqrt(num_norm/den_norm);
@@ -176,9 +171,6 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
             return x_new;
         }
 
-        // update x_old with x_new content and continue iteration
-
-        copy(x_new, x_old);
     }
 
     printf("\nSolution x did not converge\n");

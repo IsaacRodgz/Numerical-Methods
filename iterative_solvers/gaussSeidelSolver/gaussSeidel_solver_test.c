@@ -12,27 +12,25 @@ void test_solve_gaussSeidel(const char *matrix_filename, const char *vector_file
 
     printf("\nRead matrix A");
     A = read_matrix(matrix_filename, 1);
-    print_matrix(A);
+    //print_matrix(A);
 
     printf("\nRead vector b");
     b = read_matrix(vector_filename, 1);
-    print_matrix(b);
+    //print_matrix(b);
 
-    x_solve = gaussSeidelSolver(A, b, 1000, 0.000000001);
+    x_solve = gaussSeidelSolver(A, b, 5000, 0.000000001);
 
-    printf("-----------------------------------------------------------\n\n");
-
-    printf("\nSolution of system by Gauss-Seidel, x_solve:\n");
-    print_matrix(x_solve);
+    //printf("\nSolution of system by Gauss-Seidel, x_solve:\n");
+    //print_matrix(x_solve);
 
     // Read A and b again because solve_no_pivot() overwrites them
- 
-    A_temp = read_matrix(matrix_filename, 0);
-    b = read_matrix(vector_filename, 0);
+
+    //A_temp = read_matrix(matrix_filename, 0);
+    //b = read_matrix(vector_filename, 0);
 
     printf("\nComparing A*x_solve with b...\n");
-    print_matrix(multiply(A_temp, x_solve));
-    if(equals(b, multiply(A_temp, x_solve), 0.00000001) == 0)
+    //print_matrix(multiply(A_temp, x_solve));
+    if(equals(b, multiply(A, x_solve), 0.00000001) == 0)
         printf("\nTest FAILED. A * x_solve != b for given A and b.\n\n");
     else
         printf("\nTest PASSED. A * x_solve = b for given A and b.\n\n");
