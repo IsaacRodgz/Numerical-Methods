@@ -14,12 +14,16 @@ void plotFunction( double (*f)(double), double xmin, double xmax, int nIntervals
 
 void plotData( double * data, int size );
 
-double polynomial4(double x);
+double f1(double x);
 
-double polynomial4P(double x);
+double f2(double x);
 
-double squareRoot(double x);
+double f3(double x);
 
-double squareRootP(double x);
+double f4(double x);
+
+double f5(double x);
+
+double f6(double x);
 
 #endif

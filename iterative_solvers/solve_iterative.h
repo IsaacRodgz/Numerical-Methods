@@ -20,7 +20,7 @@ void swap(Matrix ** A, Matrix ** B);
 
 double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon);
 
-double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol );
+double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol, int numIters );
 
 double newtonSolver( double (*f)(double), double (*fp)(double), double x0, double tol, double epsilon, int numIter );
 

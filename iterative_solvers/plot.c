@@ -1,33 +1,48 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "plot.h"
 
-double polynomial4(double x){
+double f1(double x){
 
-    // f(x) = x^4 - 5x^2 - x - 3
+    // f(x) = x^2
 
-    return (x*x*x*x) - 5*(x*x) - x - 3;
+    return x*x;
 }
 
-double polynomial4P(double x){
-
-    // f(x) = 4x^3 - 10x - 1
-
-    return 4*(x*x*x) - 10*(x) - 1;
-}
-
-double squareRoot(double x){
+double f2(double x){
 
     // f(x) = x^2 - 2
 
     return x*x - 2;
 }
 
-double squareRootP(double x){
+double f3(double x){
 
-    // f'(x) = 2x
+    // f(x) = sin(x)
 
-    return 2*x;
+    return sin(x);
+}
+
+double f4(double x){
+
+    // f(x) = 1/x^2
+
+    return 1/(x*x);
+}
+
+double f5(double x){
+
+    // f(x) = x^3 + 3x^2 + 2x
+
+    return x*x*x + 3*x*x + 2*x;
+}
+
+double f6(double x){
+
+    // f(x) = 1/x^2
+
+    return 1/x;
 }
 
 void plotFunction( double (*f)(double), double xmin, double xmax, int nIntervals, double xSolution){
@@ -50,13 +65,13 @@ void plotFunction( double (*f)(double), double xmin, double xmax, int nIntervals
     char *tempSolutionFileName;
     double x, y;
 
-    tempDataFileName = "Data";
-    tempSolutionFileName = "solution";
+    tempDataFileName = "f(x)";
+    tempSolutionFileName = "root";
     gnuplotPipe = popen("gnuplot -persist","w");
 
     if (gnuplotPipe) {
 
-        fprintf(gnuplotPipe,"set title \"Jacobi\"\n");
+        fprintf(gnuplotPipe,"set title \"f(x)\"\n");
         fprintf(gnuplotPipe,"set xlabel \"x\"\n");
         fprintf(gnuplotPipe,"set ylabel \"f(x)\"\n");
 
