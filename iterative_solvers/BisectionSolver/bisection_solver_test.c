@@ -72,7 +72,7 @@ void main(int argc, char* argv[]){
         printf("\nerror: Two missing arguments are required: [intervalLeft] [intervalRight]\n\n");
     }
 
-    if(argc==2){
+    if(argc==3){
 
         printf("\nerror: One missing arguments are required: [intervalRight]\n\n");
     }
