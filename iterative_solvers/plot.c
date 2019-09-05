@@ -10,11 +10,25 @@ double f1(double x){
     return x*x;
 }
 
+double f1p(double x){
+
+    // f´(x) = 2x
+
+    return 2*x;
+}
+
 double f2(double x){
 
     // f(x) = x^2 - 2
 
     return x*x - 2;
+}
+
+double f2p(double x){
+
+    // f´(x) = 2x
+
+    return 2*x;
 }
 
 double f3(double x){
@@ -24,11 +38,25 @@ double f3(double x){
     return sin(x);
 }
 
+double f3p(double x){
+
+    // f´(x) = cos(x)
+
+    return cos(x);
+}
+
 double f4(double x){
 
     // f(x) = 1/x^2
 
     return 1/(x*x);
+}
+
+double f4p(double x){
+
+    // f(x) = -2/x^3
+
+    return -2/(x*x*x);
 }
 
 double f5(double x){
@@ -38,9 +66,16 @@ double f5(double x){
     return x*x*x + 3*x*x + 2*x;
 }
 
+double f5p(double x){
+
+    // f´(x) = 3x^2 + 6x + 2
+
+    return 3*x*x + 6*x + 2;
+}
+
 double f6(double x){
 
-    // f(x) = 1/x^2
+    // f(x) = 1/(x-2)
 
     return 1/(x-2);
 }

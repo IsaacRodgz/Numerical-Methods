@@ -241,8 +241,8 @@ double newtonSolver( double (*f)(double), double (*fp)(double), double x0, doubl
         double y  = f(x0);
         double yp  = fp(x0);
 
-        if ( fabs( yp ) <= epsilon ) {
-            printf("\nSolution did not converge\n");
+        if ( fabs( yp ) <= epsilon || isnan(yp) ) {
+            printf("\nSolution did not converge, derivative of f(x) smaller than 0.000000001 or equal to zero\n\n");
             exit(-1);
         }
 

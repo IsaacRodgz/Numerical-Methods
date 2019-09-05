@@ -15,14 +15,19 @@ void plotFunction( double (*f)(double), double xmin, double xmax, int nIntervals
 void plotData( double * data, int size );
 
 double f1(double x);
+double f1p(double x);
 
 double f2(double x);
+double f2p(double x);
 
 double f3(double x);
+double f3p(double x);
 
 double f4(double x);
+double f4p(double x);
 
 double f5(double x);
+double f5p(double x);
 
 double f6(double x);
 
