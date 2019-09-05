@@ -44,7 +44,7 @@ void test_solve_bisection(char * funcName, char * xi, char * xf){
     }
 
     double x_solve;
-    int numIters = 1000;
+    int numIters = 5000;
 
     x_solve = bisectionSolver(func, xmin, xmax, 0.000001, numIters);
 

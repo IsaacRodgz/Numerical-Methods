@@ -180,7 +180,7 @@ Matrix * gaussSeidelSolver(Matrix * A, Matrix * b, int num_iters, double toleran
 
 double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol, int numIters ){
 
-    if( f(xmin)*f(xmax) >= 0 ){
+    if( f(xmin)*f(xmax) > 0 || xmin > xmax ){
         printf("\nInput interval not valid for Bisection algorithm\n\n");
         exit(-1);
     }
@@ -193,7 +193,23 @@ double bisectionSolver( double (*f)(double), double xmin, double xmax, double to
 
         xmid = (xmin + xmax) / 2;
 
-        if ( f(xmid) * f(xmin) < 0 ) {
+        if ( (xmax - xmin) < tol ) {
+
+            converged = TRUE;
+            break;
+
+        } else if ( f(xmin) == 0 || f(xmax) == 0 || f(xmid) == 0 ) {
+
+            converged = TRUE;
+
+            if (f(xmin) == 0)
+                xmax = xmin;
+            else if (f(xmax) == 0)
+                xmin = xmax;
+
+            break;
+
+        } else if ( f(xmid) * f(xmin) < 0 ) {
 
             xmax = xmid;
 
@@ -201,21 +217,10 @@ double bisectionSolver( double (*f)(double), double xmin, double xmax, double to
 
             xmin = xmid;
 
-        } else if ( f(xmid) == 0 ){
-
-            converged = TRUE;
-            break;
-
-        } else {
+        }  else {
 
             printf("\nBisection method fails\n\n");
             exit(-1);
-        }
-
-        if ( (xmax - xmin) < tol ){
-
-            converged = TRUE;
-            break;
         }
     }
 

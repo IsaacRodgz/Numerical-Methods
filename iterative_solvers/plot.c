@@ -42,7 +42,7 @@ double f6(double x){
 
     // f(x) = 1/x^2
 
-    return 1/x;
+    return 1/(x-2);
 }
 
 void plotFunction( double (*f)(double), double xmin, double xmax, int nIntervals, double xSolution){
