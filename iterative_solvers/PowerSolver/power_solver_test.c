@@ -9,7 +9,7 @@ void test_solve_power(const char *matrix_filename){
     printf("\nRead matrix A");
     Matrix *A;
     A = read_matrix(matrix_filename, 1);
-    print_matrix(A);
+    //print_matrix(A);
 
     // Vector that will contain the dominant eigenvetor corresponding to the dominant eigenvalue found
     Matrix *eigenVec = malloc( sizeof( eigenVec ) );
@@ -23,17 +23,13 @@ void test_solve_power(const char *matrix_filename){
 
     double eigenVal = 0.0;
     int numIters = 200;
-    double epsilon = 0.0000001;
+    double epsilon = 0.000000001;
 
-    double* lambdaTrace;
-
-    lambdaTrace = powerSolver(A, eigenVec, &eigenVal, numIters, epsilon);
+    powerSolver(A, eigenVec, &eigenVal, numIters, epsilon);
 
     printf("Dominant eigenvalue found: %lf\n", eigenVal);
     printf("\nDominant eigenvector found:\n");
     print_matrix( eigenVec );
-
-    plotData( lambdaTrace, numIters );
 
 }
 
@@ -44,9 +40,7 @@ void main(int argc, char* argv[]){
         printf("\nerror: Two missing arguments are required: /path/to/matrix, /path/to/vector\n\n");
     }
 
-    if(argc==2){
-
+    else 
         test_solve_power(argv[1]);
-    }
 
 }

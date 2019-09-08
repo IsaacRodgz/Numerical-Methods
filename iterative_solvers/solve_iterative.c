@@ -286,7 +286,10 @@ void swap(Matrix ** A, Matrix ** B){
 
 }
 
-double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon){
+void powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon){
+
+    // Flag to indicate Convergence
+    int converged = FALSE;
 
     // Size of matrix and vectors
     int rows = A->rows;
@@ -297,14 +300,10 @@ double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int 
     // Helper variable for dot product of vectors
     double accum;
 
-    // Array to plot convergence of eigenvalue calculated
-    double* lambdaTrace = malloc( num_iters * sizeof( *lambdaTrace ) );
-    int lambdaTraceSize = 0;
-
     // Variable to iterate algorithm
     int i = 0;
 
-    // Vector to calculate A * v_(k-1)
+    // Vector to calculate v_k
     Matrix *eigenVectNew = malloc( sizeof( eigenVectNew ) );
 
     // Normalize initial vector v_0
@@ -319,7 +318,7 @@ double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int 
         // Calculate w =  A * v_(k-1)
         eigenVectNew = multiply(A, eigenVectOld);
 
-        // Calculate v_(K) = w/norm(w)
+        // Calculate v_(k) = w/norm(w)
         norm = vectNorm(eigenVectNew);
         for (int k = 0; k < rows; k++)
             eigenVectOld->data[k] = eigenVectNew->data[k] * (1/norm);
@@ -328,6 +327,10 @@ double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int 
 
         accum = 0;
 
+        // Calculate A*v_k
+        eigenVectNew = multiply(A, eigenVectOld);
+
+        // v_k * (A*v_k)
         for (int j = 0; j < rows; j++) {
             accum += eigenVectNew->data[j] * eigenVectOld->data[j];
         }
@@ -336,17 +339,18 @@ double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int 
 
         // Check for convergence and stop or update the eigenvalue
 
-        if ( fabs( lambdaNew - (*lambdaInit) ) / lambdaNew < epsilon ) {
+        if ( fabs( (*lambdaInit) - lambdaNew ) < epsilon ) {
             (*lambdaInit) = lambdaNew;
+            converged = TRUE;
             break;
         }
-        else{
-            lambdaTrace[i] = lambdaNew;
-            (*lambdaInit) = lambdaNew;
-        }
+
+        (*lambdaInit) = lambdaNew;
     }
 
-    printf("\nConverged after %d iterations\n\n", i);
-
-    return lambdaTrace;
+    if (converged == TRUE) {
+        printf("\nConverged after %d iterations\n\n", i);
+    }
+    else
+        printf("\nMethod did not converge in given iterations. Returning last solution.\n\n");
 }

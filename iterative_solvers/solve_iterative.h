@@ -18,7 +18,7 @@ double vectNorm(Matrix* vect);
 
 void swap(Matrix ** A, Matrix ** B);
 
-double * powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon);
+void powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon);
 
 double bisectionSolver( double (*f)(double), double xmin, double xmax, double tol, int numIters );
 
