@@ -20,13 +20,8 @@ void test_solve_gaussSeidel(const char *matrix_filename, const char *vector_file
 
     x_solve = gaussSeidelSolver(A, b, 5000, 0.000000001);
 
-    //printf("\nSolution of system by Gauss-Seidel, x_solve:\n");
-    //print_matrix(x_solve);
-
-    // Read A and b again because solve_no_pivot() overwrites them
-
-    //A_temp = read_matrix(matrix_filename, 0);
-    //b = read_matrix(vector_filename, 0);
+    printf("\nSolution of system by Gauss-Seidel, x_solve:\n");
+    print_matrix(x_solve);
 
     printf("\nComparing A*x_solve with b...\n");
     //print_matrix(multiply(A_temp, x_solve));

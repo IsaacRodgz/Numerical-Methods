@@ -12,16 +12,14 @@ void test_solve_jacobi(const char *matrix_filename, const char *vector_filename)
 
     printf("\nRead matrix A");
     A = read_matrix(matrix_filename, 1);
-    //print_matrix(A);
 
     printf("\nRead vector b");
     b = read_matrix(vector_filename, 1);
-    //print_matrix(b);
 
     x_solve = jacobiSolver(A, b, 5000, 0.000000001);
 
-    //printf("\nSolution of system by Jacobi, x_solve:\n");
-    //print_matrix(x_solve);
+    printf("\nSolution of system by Jacobi, x_solve:\n");
+    print_matrix(x_solve);
 
     printf("\nComparing A*x_solve with b...\n");
     //print_matrix(multiply(A_temp, x_solve));
