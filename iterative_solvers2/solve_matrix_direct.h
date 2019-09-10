@@ -46,6 +46,6 @@ int is_simetric(Matrix *A);
 
 void factor_cholesky_modified(Matrix *A);
 
-Matrix * solve_cholesky_modified(Matrix *A, Matrix *b);
+Matrix * solve_cholesky_modified(Matrix *A, Matrix *b, int factor_flag);
 
 #endif

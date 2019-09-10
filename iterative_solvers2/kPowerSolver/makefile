@@ -8,4 +8,4 @@ all:
 
 clean:
 
-	rm -f runTest k_power_solver_test.o solve_iterative.o solve_matrix_direct.o matrix_struct.o
+	rm -f runTest *.o

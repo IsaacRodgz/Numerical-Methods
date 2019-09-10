@@ -767,7 +767,7 @@ void factor_cholesky_modified(Matrix *A){
 
 // Solve linear system through modified Cholesky factorization
 
-Matrix * solve_cholesky_modified(Matrix *A, Matrix *b){
+Matrix * solve_cholesky_modified(Matrix *A, Matrix *b, int factor_flag){
 
     // Verify that A is simetric
 
@@ -780,8 +780,8 @@ Matrix * solve_cholesky_modified(Matrix *A, Matrix *b){
     int rows = A->rows;
 
     // Factor A as LDL^T through modified Cholesky method
-
-    factor_cholesky_modified(A);
+    if(factor_flag == 1)
+        factor_cholesky_modified(A);
 
     // Solve for z in L*z = b
 
@@ -812,6 +812,11 @@ Matrix * solve_cholesky_modified(Matrix *A, Matrix *b){
     x_solve->data = malloc( x_solve->rows*x_solve->cols*sizeof( x_solve->data ) );
 
     x_solve = solve_upper_triang(A, y, 1);
+
+    free(z->data);
+    free(z);
+    free(y->data);
+    free(y);
 
     return x_solve;
 }

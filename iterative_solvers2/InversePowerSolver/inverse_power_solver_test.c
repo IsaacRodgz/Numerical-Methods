@@ -16,20 +16,18 @@ void test_inverse_solve_power(const char *matrix_filename){
     eigenVec->cols = 1;
     eigenVec->data = malloc( eigenVec->rows * eigenVec->cols * sizeof( eigenVec->data ) );
 
-    for (size_t i = 0; i < eigenVec->rows; i++) {
-        eigenVec->data[i] = 1.0;
-    }
-
-    double eigenVal = 0.0;
+    double eigenVal = 0;
     int numIters = 200;
     double epsilon = 0.000000001;
 
     inversePowerSolver(A, eigenVec, &eigenVal, numIters, epsilon);
 
+    printf("----------------------------------------------\n\n");
     printf("Dominant eigenvalue found: %lf\n", eigenVal);
     printf("\nDominant eigenvector found:\n");
     print_matrix( eigenVec );
 
+    printf("----------------------------------------------\n\n");
     A = read_matrix(matrix_filename, 0);
     printf("Product of A*eigenvector = lambda*eigenvector: \n");
     print_matrix( multiply( A, eigenVec ) );

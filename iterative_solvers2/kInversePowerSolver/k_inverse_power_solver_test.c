@@ -3,7 +3,7 @@
 #include "../solve_iterative.h"
 #include "../matrix_struct.h"
 
-void test_solve_k_power(const char *matrix_filename){
+void test_solve_k_inverse_power(const char *matrix_filename){
 
     printf("\nRead matrix A");
     Matrix *A;
@@ -30,12 +30,11 @@ void test_solve_k_power(const char *matrix_filename){
 
     // Find eigenvetors and eigenvalues
 
-    kPowerSolver(A, eigenVects, eigenVals, numIters, epsilon, k);
-
+    kInversePowerSolver(A, eigenVects, eigenVals, numIters, epsilon, k);
     printf("----------------------------------------------\n\n");
-    printf("Dominant eigenvalues found:\n");
+    printf("Smallest eigenvalues found:\n");
     print_matrix( eigenVals );
-    printf("\nDominant eigenvectors found:\n");
+    printf("Smallest eigenvectors found:\n");
     print_matrix( eigenVects );
 
 }
@@ -48,6 +47,6 @@ void main(int argc, char* argv[]){
     }
 
     else
-        test_solve_k_power(argv[1]);
+        test_solve_k_inverse_power(argv[1]);
 
 }

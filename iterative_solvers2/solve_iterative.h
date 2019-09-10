@@ -18,6 +18,8 @@ void powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_
 
 void kPowerSolver(Matrix * A, Matrix * eigenVects, Matrix * eigenVals, int num_iters, double epsilon, int k);
 
-void inversePowerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon);
+void inversePowerSolver(Matrix * A, Matrix * eigenVect, double* lambdaInit, int num_iters, double epsilon);
+
+void kInversePowerSolver(Matrix * A, Matrix * eigenVects, Matrix * eigenVals, int num_iters, double epsilon, int k);
 
 #endif
