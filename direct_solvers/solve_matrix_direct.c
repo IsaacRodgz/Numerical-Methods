@@ -256,6 +256,8 @@ void set_pivot(Matrix *A, Matrix *b, int *index_order, int i_switch, int j_switc
             A->data[ i*cols + index_set ] = buffer[i];
     }
 
+    free(buffer);
+
 }
 
 // Helper function to exchange rows from index: i_switch to index: index_set
@@ -500,6 +502,7 @@ Matrix * solve_pivot(Matrix *A, Matrix *b){
     printf("Determinant of A: %f\n\n", index_order[rows]*diagonal_determinant(A));
 
     free(index_order);
+    free(x_solve->data);
     free(x_solve);
 
     return x_solve_ordered;
@@ -617,45 +620,17 @@ Matrix * solve_doolittle(Matrix *A, Matrix *b, int factor_flag){
 
     x_solve = solve_upper_triang(A, y, 0);
 
+    free(y->data);
+    free(y);
+
     return x_solve;
 }
 
 Matrix * solve_doolittle_pivoting(Matrix *A, Matrix *b, int *pivots){
 
     int rows = A->rows;
-    int* pivotsCopy = malloc( A->rows * sizeof *pivotsCopy );
 
-    for (int i = 0; i < rows; i++) {
-        pivotsCopy[i] = pivots[i];
-    }
-
-    // Solve L*y = b
-
-    double temp_d;
-    int temp_i;
-    for (int i = 0; i < rows; i++) {
-
-        if ( pivots[i] != i ) {
-
-            temp_d = b->data[i];
-            b->data[i] = b->data[ pivots[i] ];
-            b->data[ pivots[i] ] = temp_d;
-
-            temp_i = pivots[i];
-            pivots[i] = pivots[temp_i];
-            pivots[temp_i] = temp_i;
-        }
-    }
-
-    Matrix *y = malloc( sizeof( y ) );
-
-    y->rows = rows;
-    y->cols = 1;
-    y->data = malloc( y->rows*y->cols*sizeof( y->data ) );
-
-    y = solve_lower_triang(A, b, 1);
-
-    // Solve U*x = y
+    // Order b in x_solve
 
     Matrix *x_solve = malloc( sizeof( x_solve ) );
 
@@ -663,24 +638,17 @@ Matrix * solve_doolittle_pivoting(Matrix *A, Matrix *b, int *pivots){
     x_solve->cols = 1;
     x_solve->data = malloc( x_solve->rows*x_solve->cols*sizeof( x_solve->data ) );
 
-    x_solve = solve_upper_triang(A, y, 0);
-/*
-    // Recover order
+    for(int i = 0; i < rows; i++)
+        x_solve->data[ i ] = b->data[ pivots[i] ];
 
-    for (int i = 0; i < rows; i++) {
+    // Solve L*y = b where b is x_solve
 
-        if ( pivotsCopy[i] != i ) {
+    x_solve = solve_lower_triang(A, x_solve, 1);
 
-            temp_d = x_solve->data[i];
-            x_solve->data[i] = x_solve->data[ pivotsCopy[i] ];
-            x_solve->data[ pivotsCopy[i] ] = temp_d;
+    // Solve U*x = y where y is x_solve
 
-            temp_i = pivotsCopy[i];
-            pivotsCopy[i] = pivotsCopy[temp_i];
-            pivotsCopy[temp_i] = temp_i;
-        }
-    }
-*/
+    x_solve = solve_upper_triang(A, x_solve, 0);
+
     return x_solve;
 }
 

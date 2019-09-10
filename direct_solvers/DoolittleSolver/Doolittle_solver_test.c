@@ -18,26 +18,15 @@ void test_solve_doolittle(const char *matrix_filename, const char *vector_filena
     b = read_matrix(vector_filename, 1);
     print_matrix(b);
 
-    ///////
-
     int* pivots = malloc( A->rows * sizeof *pivots );
 
     factor_doolittle_pivoting(A, pivots);
-
     x_solve = solve_doolittle_pivoting(A, b, pivots);
 
-    print_matrix(x_solve);
-
-    //////
-
-/*
-    x_solve = solve_doolittle(A, b, 1);
-
     printf("-----------------------------------------------------------\n\n");
-
     printf("\nSolution of system by Doolittle factorization, x_solve:\n");
     print_matrix(x_solve);
-*/
+
     // Read A and b again because solve_no_pivot() overwrites them
 
     A_temp = read_matrix(matrix_filename, 0);
