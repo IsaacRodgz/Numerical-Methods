@@ -182,10 +182,37 @@ void inversePowerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, i
         printf("\nMethod did not converge in given iterations. Returning last solution.\n\n");
 }
 
-void kPowerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_iters, double epsilon){
+void deflation(Matrix * eigenVects, Matrix * eigenVectInit, int currCol){
 
-    // Flag to indicate Convergence
-    int converged = FALSE;
+    double* temp = calloc( eigenVectInit->rows, sizeof *temp );
+
+    for (int i = 0; i < currCol; i++) {
+
+        double a = 0;
+
+        for (int m = 0; m < eigenVects->cols; m++) {
+
+            a += eigenVectInit->data[m] * eigenVects->data[ i*eigenVects->cols + m ];
+        }
+
+        for (int m = 0; m < eigenVects->cols; m++) {
+
+            temp[m] += a * eigenVects->data[ i*eigenVects->cols + m ];
+        }
+    }
+
+    for (int i = 0; i < eigenVectInit->rows; i++) {
+
+        eigenVectInit->data[i] -= temp[i];
+    }
+}
+
+void kPowerSolver(Matrix * A, Matrix * eigenVects, Matrix * eigenVals, int num_iters, double epsilon, int k){
+
+    if ( is_simetric(A) == FALSE ) {
+        printf("Matrix is not symmetric, cannot apply algorithm\n");
+        exit(-1);
+    }
 
     // Size of matrix and vectors
     int rows = A->rows;
@@ -193,60 +220,101 @@ void kPowerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num
     // Variable to update dominant eigenvalue
     double lambdaNew;
 
-    // Helper variable for dot product of vectors
-    double accum;
-
-    // Variable to iterate algorithm
-    int i = 0;
-
     // Vector to calculate v_k
     Matrix *eigenVectNew = malloc( sizeof( eigenVectNew ) );
 
-    // Normalize initial vector v_0
-    double norm = vectNorm(eigenVectOld);
-    for (int k = 0; k < rows; k++)
-        eigenVectOld->data[k] *= (1/norm);
+    // Vector to calculate v_(k-1)
+    Matrix *eigenVectOld = malloc( sizeof( eigenVectOld ) );
+    eigenVectOld->rows = A->rows;
+    eigenVectOld->cols = 1;
+    eigenVectOld->data = malloc( eigenVectOld->rows * eigenVectOld->cols * sizeof( eigenVectOld->data ) );
 
-    // Start iterations
+    for (int s = 0; s < k; s++) {
 
-    for (i = 0; i < num_iters; i++) {
+        // Flag to indicate Convergence
+        int converged = FALSE;
 
-        // Calculate w =  A * v_(k-1)
-        eigenVectNew = multiply(A, eigenVectOld);
+        // Initialize and Normalize initial vector v_0
 
-        // Calculate v_(k) = w/norm(w)
-        norm = vectNorm(eigenVectNew);
+        for (int i = 0; i < eigenVectOld->rows; i++) {
+            eigenVectOld->data[i] = (double)rand()/RAND_MAX*2.0-1.0;
+        }
+
+        printf("\nRandom vector v_0\n");
+        print_matrix(eigenVectOld);
+
+        if (s>0)
+            deflation(eigenVects, eigenVectOld, s);
+
+        double norm = vectNorm(eigenVectOld);
         for (int k = 0; k < rows; k++)
-            eigenVectOld->data[k] = eigenVectNew->data[k] * (1/norm);
+            eigenVectOld->data[k] *= (1/norm);
 
-        // Calculate dominant eigenvalue and store in lambdaNew
+        for (int i = 0; i < s; i++) {
 
-        accum = 0;
+            double sum = 0;
 
-        // Calculate A*v_k
-        eigenVectNew = multiply(A, eigenVectOld);
+            for (int m = 0; m < eigenVectOld->rows; m++) {
 
-        // v_k * (A*v_k)
-        for (int j = 0; j < rows; j++) {
-            accum += eigenVectNew->data[j] * eigenVectOld->data[j];
+                sum += eigenVectOld->data[m] * eigenVects->data[ i*eigenVects->cols + m ];
+            }
+
+            printf("SUM: %lf\n", sum);
         }
 
-        lambdaNew = accum;
+        // Initialize lambda_0
+        eigenVals->data[s] = 0;
 
-        // Check for convergence and stop or update the eigenvalue
+        // Start iterations
+        int i = 0;
+        for (i = 0; i < num_iters; i++) {
 
-        if ( fabs( (*lambdaInit) - lambdaNew ) < epsilon ) {
-            (*lambdaInit) = lambdaNew;
-            converged = TRUE;
-            break;
+            // Calculate w =  A * v_(k-1)
+            eigenVectNew = multiply(A, eigenVectOld);
+
+            // Calculate v_(k) = w/norm(w)
+            norm = vectNorm(eigenVectNew);
+            for (int k = 0; k < rows; k++)
+                eigenVectOld->data[k] = eigenVectNew->data[k] * (1/norm);
+
+            // Calculate dominant eigenvalue and store in lambdaNew
+
+            // Calculate A*v_k
+            eigenVectNew = multiply(A, eigenVectOld);
+
+            double accum = 0;
+
+            // v_k * (A*v_k)
+            for (int j = 0; j < rows; j++) {
+                accum += eigenVectNew->data[j] * eigenVectOld->data[j];
+            }
+
+            lambdaNew = accum;
+
+            // Check for convergence and stop or update the eigenvalue
+
+            if ( fabs( eigenVals->data[s] - lambdaNew ) < epsilon ) {
+                eigenVals->data[s] = lambdaNew;
+                converged = TRUE;
+                break;
+            }
+
+            eigenVals->data[s] = lambdaNew;
         }
 
-        (*lambdaInit) = lambdaNew;
-    }
+        if (converged == TRUE) {
+            printf("----------------------------------------------\n");
+            printf("\nConverged for eigenvector_%d after %d iterations\n\n", s+1, i);
 
-    if (converged == TRUE) {
-        printf("\nConverged after %d iterations\n\n", i);
+            for (int i = 0; i < eigenVects->cols; i++) {
+                eigenVects->data[ s*eigenVects->cols + i ] = eigenVectOld->data[i];
+            }
+
+            print_matrix(eigenVals);
+            print_matrix(eigenVects);
+            printf("----------------------------------------------\n");
+        }
+        else
+            printf("\nMethod did not converge in given iterations. Returning last solution.\n\n");
     }
-    else
-        printf("\nMethod did not converge in given iterations. Returning last solution.\n\n");
 }
