@@ -22,4 +22,8 @@ void inversePowerSolver(Matrix * A, Matrix * eigenVect, double* lambdaInit, int 
 
 void kInversePowerSolver(Matrix * A, Matrix * eigenVects, Matrix * eigenVals, int num_iters, double epsilon, int k);
 
+void maxOffDiagonal(Matrix * A, int* p, int* q);
+
+void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon);
+
 #endif

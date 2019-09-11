@@ -398,3 +398,98 @@ void kInversePowerSolver(Matrix * A, Matrix * eigenVects, Matrix * eigenVals, in
             printf("\nMethod did not converge in given iterations. Returning last solution.\n\n");
     }
 }
+
+void maxOffDiagonal(Matrix * A, int* p, int* q){
+
+    double max = 0;
+
+    for (int i = 0; i < A->rows; i++) {
+
+        for (int j = 0; j < A->cols; j++) {
+
+            if ( i != j) {
+
+                if( fabs( A->data[ i*A->cols + j] ) > max){
+
+                    max = fabs( A->data[ i*A->cols + j] );
+                    p[0] = i;
+                    q[0] = j;
+
+                }
+            }
+        }
+    }
+}
+
+void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon){
+
+    for (int i = 0; i < F->rows; i++) {
+        for (int j = 0; j < F->cols; j++) {
+            if (i == j)
+                F->data[i*F->cols + j] = 1.0;
+            else
+                F->data[i*F->cols + j] = 0.0;
+        }
+    }
+
+    double* FP = malloc( F->rows * sizeof *FP );
+    double* FQ = malloc( F->rows * sizeof *FQ );
+
+    for (int i = 0; i < num_iters; i++) {
+
+        // Get row, column position of max element of A off the diagonal
+        int p;
+        int q;
+
+        maxOffDiagonal(A, &p, &q);
+
+        if ( fabs( A->data[p*A->cols + q] ) < epsilon ) {
+            printf("\nConverged at iteration: %d\n\n", i+1);
+            break;
+        }
+
+        // Copy columns p and q of matrix of eigenvectors F
+        for (int k = 0; k < F->rows; k++) {
+            FP[k] = F->data[k*F->cols + p];
+            FQ[k] = F->data[k*F->cols + q];
+        }
+
+        // Calculate 2*a_ij / ( a_jj - a_ii )
+        double w = (A->data[q*(A->cols+1)] - A->data[p*(A->cols+1)]) / (2*A->data[p*A->cols + q]);
+        double t = (1/(fabs(w) + sqrt(w*w + 1)))*( w > 0? 1 : -1 );
+
+        double c = 1/sqrt(t*t + 1);
+        double s = t*c;
+        //double tau = s/(1+c);
+
+        // Update matrix of eigenvectors F
+        for (int k = 0; k < F->rows; k++) {
+            F->data[k*F->cols + p] = c*FP[k] - s*FQ[k];
+            F->data[k*F->cols + q] = s*FP[k] + c*FQ[k];
+        }
+
+        double temp_pq = A->data[p*A->cols + q];
+        A->data[p*A->cols + q] = 0;
+        A->data[q*A->cols + p] = 0;
+
+        double temp_pp = A->data[p*(A->cols+1)];
+        A->data[p*(A->cols+1)] = (c*c)*temp_pp + (s*s)*A->data[q*(A->cols+1)] - (2*c*s)*temp_pq;
+        A->data[q*(A->cols+1)] = (s*s)*temp_pp + (c*c)*A->data[q*(A->cols+1)] + (2*c*s)*temp_pq;
+
+        for (int j = 0; j < A->rows; j++) {
+            double temp;
+            if ( j != p & j != q ) {
+                temp = A->data[j*A->cols + p];
+                A->data[j*A->cols + p] = c*temp - s*A->data[j*A->cols + q];
+                A->data[j*A->cols + q] = c*A->data[j*A->cols + q] + s*temp;
+
+                A->data[p*A->cols + j] = A->data[j*A->cols + p];
+                A->data[q*A->cols + j] = A->data[j*A->cols + q];
+
+                //temp = A->data[p*A->cols + j];
+                //A->data[p*A->cols + j] = c*temp + s*A->data[q*A->cols + j];
+                //A->data[q*A->cols + j] = c*A->data[q*A->cols + j] - s*temp;
+            }
+        }
+    }
+}
