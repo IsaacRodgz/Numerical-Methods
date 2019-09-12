@@ -1,18 +1,9 @@
-# Direct solvers for linear systems
+# Eigensolvers
 
-Funciones de métodos iterativos para resolución de sistemas lineales de ecuaciones:
-
+* Iteración de potencia con deflación
+* Iteración de potencia inversa
+* Iteración de potencia inversa con deflación
 * Jacobi
-* Gauss-Seidel
-
-Funciones de métodos iterativos para encontrar raices de polinomios
-
-* Newton-Raphson
-* Bisección
-
-Función de método iterativo para encontrar valor y vector propio más grande:
-
-* Iteración de potencia
 
 ## Usage
 
@@ -20,22 +11,21 @@ Función de método iterativo para encontrar valor y vector propio más grande:
 
 - Se genera archivo ejeutable llamado "runTest"
 
-- Ejecutar comando "./runTest argumentos
+- Ejecutar comando "./runTest rutaMatriz
 
 ## Example
 
-Dentro carpeta "PowerSolver":
+Dentro carpeta "jacobiSolver":
 
-/path/PowerSolver >> make
+/path/jacobiSolver >> make
 
-/path/PowerSolver >> ./runTest ../MATRICES/M_BIG.txt
+/path/jacobiSolver >> ./runTest ../M_BIG.txt
 
-/path/PowerSolver >> make clean
+/path/jacobiSolver >> make clean
 
 ## Built With
 
 * [C11] en Ubuntu 16.04 LTS
-* gnuplot
 
 ## Authors
 

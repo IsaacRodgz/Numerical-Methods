@@ -1,19 +1,20 @@
-# Power method
+# Power method with deflation
 
 ## Arguments
 
 * arg1: Ruta archivo matriz A
+* arg2: Number of eigenvetors and eigenvalues to obtain
 
 ## Example
 
 - >> make
-- >> ./runTest ../M_BIG.txt
+- >> ./runTest ../M_BIG.txt 5
 - >> make clean
 
 ## Output
 
-- Valor propio dominante
-- Vector propio dominante
+- k valores propios más grandes
+- k vectores propios correspondientes
 
 ## Built With
 

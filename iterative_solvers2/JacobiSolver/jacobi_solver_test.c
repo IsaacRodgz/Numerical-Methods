@@ -16,8 +16,8 @@ void test_solve_jacobi(const char *matrix_filename){
     eigenVects->cols = A->cols;
     eigenVects->data = malloc( eigenVects->rows * eigenVects->cols * sizeof( eigenVects->data ) );
 
-    int numIters = 1000;
-    double epsilon = 0.0000001;
+    int numIters = 10000;
+    double epsilon = 0.000000001;;
 
     jacobiSolver(A, eigenVects, numIters, epsilon);
 

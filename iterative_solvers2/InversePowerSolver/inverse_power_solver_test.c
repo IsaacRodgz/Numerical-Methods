@@ -17,7 +17,7 @@ void test_inverse_solve_power(const char *matrix_filename){
     eigenVec->data = malloc( eigenVec->rows * eigenVec->cols * sizeof( eigenVec->data ) );
 
     double eigenVal = 0;
-    int numIters = 200;
+    int numIters = 10000;
     double epsilon = 0.000000001;
 
     inversePowerSolver(A, eigenVec, &eigenVal, numIters, epsilon);
