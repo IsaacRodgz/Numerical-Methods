@@ -125,7 +125,8 @@ void inversePowerSolver(Matrix * A, Matrix * eigenVect, double* lambdaInit, int 
     int i = 0;
 
     // Factor matrix A
-    factor_cholesky_modified(A);
+    int* pivots = malloc(A->rows * sizeof *pivots);
+    factor_doolittle_pivoting(A, pivots);
 
     // Vector to calculate v_(k-1)
     Matrix *eigenVectOld = malloc( sizeof( eigenVectOld ) );
@@ -150,7 +151,7 @@ void inversePowerSolver(Matrix * A, Matrix * eigenVect, double* lambdaInit, int 
             eigenVectOld->data[k] = eigenVectOld->data[k] * (1/norm);
 
         // Calculate w =  A * v_(k-1)
-        eigenVectNew = solve_cholesky_modified(A, eigenVectOld, 0);
+        eigenVectNew = solve_doolittle_pivoting(A, eigenVectOld, pivots);
 
         // Calculate dominant eigenvalue and store in lambdaNew
 
@@ -328,7 +329,8 @@ void kInversePowerSolver(Matrix * A, Matrix * eigenVects, Matrix * eigenVals, in
     eigenVectOld->cols = 1;
     eigenVectOld->data = malloc( eigenVectOld->rows * eigenVectOld->cols * sizeof( eigenVectOld->data ) );
 
-    factor_cholesky_modified(A);
+    int* pivots = malloc(A->rows * sizeof *pivots);
+    factor_doolittle_pivoting(A, pivots);
 
     for (int s = 0; s < k; s++) {
 
@@ -359,7 +361,7 @@ void kInversePowerSolver(Matrix * A, Matrix * eigenVects, Matrix * eigenVals, in
                 eigenVectOld->data[k] = eigenVectOld->data[k] * (1/norm);
 
             // Calculate w =  A * v_(k-1)
-            eigenVectNew = solve_cholesky_modified(A, eigenVectOld, 0);
+            eigenVectNew = solve_doolittle_pivoting(A, eigenVectOld, pivots);
 
             // Calculate dominant eigenvalue and store in lambdaNew
 
