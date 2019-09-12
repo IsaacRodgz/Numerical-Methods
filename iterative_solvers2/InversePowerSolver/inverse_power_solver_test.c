@@ -27,11 +27,6 @@ void test_inverse_solve_power(const char *matrix_filename){
     printf("\nDominant eigenvector found:\n");
     print_matrix( eigenVec );
 
-    printf("----------------------------------------------\n\n");
-    A = read_matrix(matrix_filename, 0);
-    printf("Product of A*eigenvector = lambda*eigenvector: \n");
-    print_matrix( multiply( A, eigenVec ) );
-
 }
 
 void main(int argc, char* argv[]){
