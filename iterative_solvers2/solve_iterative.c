@@ -442,7 +442,8 @@ void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon){
     double* FP = malloc( F->rows * sizeof *FP );
     double* FQ = malloc( F->rows * sizeof *FQ );
 
-    for (int i = 0; i < num_iters; i++) {
+    int i;
+    for (i = 0; i < num_iters; i++) {
 
         // Get row, column position of max element of A off the diagonal
         int p;
@@ -495,4 +496,6 @@ void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon){
             }
         }
     }
+
+    printf("\nSe llego a la convergencia en %d iteraciones\n", i+1);
 }
