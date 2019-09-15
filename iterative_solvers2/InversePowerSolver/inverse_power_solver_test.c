@@ -23,7 +23,7 @@ void test_inverse_solve_power(const char *matrix_filename){
     inversePowerSolver(A, eigenVec, &eigenVal, numIters, epsilon);
 
     printf("----------------------------------------------\n\n");
-    printf("Dominant eigenvalue found: %lf\n", eigenVal);
+    printf("Dominant eigenvalue found: %ef\n", eigenVal);
     printf("\nDominant eigenvector found:\n");
     print_matrix( eigenVec );
 

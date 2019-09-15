@@ -425,6 +425,11 @@ void maxOffDiagonal(Matrix * A, int* p, int* q){
 
 void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon){
 
+    if ( is_simetric(A) == FALSE ) {
+        printf("Matrix is not symmetric, cannot apply algorithm\n");
+        exit(-1);
+    }
+
     for (int i = 0; i < F->rows; i++) {
         for (int j = 0; j < F->cols; j++) {
             if (i == j)
@@ -487,10 +492,6 @@ void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon){
 
                 A->data[p*A->cols + j] = A->data[j*A->cols + p];
                 A->data[q*A->cols + j] = A->data[j*A->cols + q];
-
-                //temp = A->data[p*A->cols + j];
-                //A->data[p*A->cols + j] = c*temp + s*A->data[q*A->cols + j];
-                //A->data[q*A->cols + j] = c*A->data[q*A->cols + j] - s*temp;
             }
         }
     }

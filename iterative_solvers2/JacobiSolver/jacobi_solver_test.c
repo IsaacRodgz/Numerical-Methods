@@ -21,8 +21,11 @@ void test_solve_jacobi(const char *matrix_filename){
 
     jacobiSolver(A, eigenVects, numIters, epsilon);
 
-    print_matrix(A);
-    print_matrix(eigenVects);
+    printf("\nEigenvalues: \n\n");
+    for (int i = 0; i < A->rows; i++) {
+
+        printf("%e\n", A->data[i*(A->cols+1)]);
+    }
 }
 
 void main(int argc, char* argv[]){
