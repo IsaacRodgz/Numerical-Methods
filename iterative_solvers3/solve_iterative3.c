@@ -154,7 +154,7 @@ void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double ep
 
     double rNorm_old = 0;
 
-    #pragma omp parallel for reduction(+:num)
+    #pragma omp parallel for reduction(+:rNorm_old)
     for (int j = 0; j < r->rows; ++j)
         rNorm_old += r->data[j] * r->data[j];
 
