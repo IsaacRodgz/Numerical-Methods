@@ -10,8 +10,8 @@ through two different iterative methodos methods, namely, Jacobi and Gauss-Seide
 
 #include "matrix_struct.h"
 
-double vectNorm(Matrix* vect);
-
 void rayleighSolver(Matrix * A, Matrix * eigenVect, double * lambda, int num_iters, double epsilon);
+
+void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double epsilon, int k);
 
 #endif

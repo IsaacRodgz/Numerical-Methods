@@ -9,25 +9,10 @@ through two different iterative methodos methods, namely, Jacobi and Gauss-Seide
 #include <math.h>
 #include <stdio.h>
 #include "solve_iterative3.h"
+#include "solve_iterative2.h"
 #include "matrix_struct.h"
 #define TRUE 1
 #define FALSE 0
-
-double vectNorm(Matrix* vect){
-
-    double sum = 0;
-
-    for (int i = 0; i < vect->rows; i++) {
-        sum += ( vect->data[i] * vect->data[i] );
-    }
-
-    if ( sum == 0.0 ) {
-        fprintf(stderr, "\n[Error] Vector of norm 0 found\n\n");
-    }
-
-    return sqrt(sum);
-}
-
 
 void rayleighSolver(Matrix * A, Matrix * eigenVect, double * lambda, int num_iters, double epsilon){
 
@@ -73,4 +58,52 @@ void rayleighSolver(Matrix * A, Matrix * eigenVect, double * lambda, int num_ite
     free(r);
     free(Ap->data);
     free(Ap);
+}
+
+void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double epsilon, int k) {
+
+    // FI - matrix of eigenvectors of A
+    // LA - matrix of eigenvalues of A
+
+    // Get initial guess with power method and deflation
+    printf("\n\n**************************\n");
+    printf("Solving by power iteration");
+    printf("\n\n**************************\n");
+    kPowerSolver(A, FI, LA, num_iters, epsilon, k);
+
+    // B[m][m] = FI[m][n]*A[n][n]*FI[n][m]
+
+    Matrix *B = malloc( sizeof( B ) );
+    B->rows = FI->rows;
+    B->cols = FI->rows;
+    B->data = malloc( B->rows * B->cols * sizeof( B->data ) );
+
+    // Factor B by jacobi: B[m][m] -> Q[m][m]*L[m][m]*Q[m][m]
+
+    Matrix *Q = malloc( sizeof( Q ) );
+    Q->rows = B->rows;
+    Q->cols = B->cols;
+    Q->data = malloc( Q->rows * Q->cols * sizeof( Q->data ) );
+
+    // Iterate with Jacobi to update Eigenvectors FI with FI[m][n] = Q[m][m]*FI[m][n]
+    printf("\n*********************\n");
+    printf("Iterating in subspace");
+    printf("\n*********************\n\n");
+    for (int i = 0; i < num_iters; i++) {
+
+        B = multiply( multiply( FI, A ), transpose(FI) );
+
+        if (is_diagonal(B) == TRUE) {
+            printf("\nMethod converged after %d iterations\n", i);
+            break;
+        }
+
+        printf("\n*********************\n");
+        printf("Iterating Jacobi");
+        printf("\n*********************\n\n");
+        jacobiSolver(B, Q, num_iters, epsilon);
+
+        FI = multiply(Q, FI);
+    }
+
 }

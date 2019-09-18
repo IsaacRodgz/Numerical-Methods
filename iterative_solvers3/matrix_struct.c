@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include "matrix_struct.h"
+#define TRUE 1
+#define FALSE 0
 
 Matrix * read_matrix(const char *filename, int verbose){
 
@@ -151,4 +153,60 @@ void copy(Matrix *x, Matrix *y){
             y->data[ i*cols + j ] = x->data[ i*cols + j ];
         }
     }
+}
+
+// Helper function to verify if A is symmetric
+
+int is_simetric(Matrix *A){
+
+    for(int i = 0; i < A->rows; i++){
+
+        for(int j = 0; j < A->cols; j++){
+
+            if(A->data[ i*A->rows + j ] != A->data[ j*A->rows + i ])
+                return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
+//Verify if A is diagonal
+
+int is_diagonal(Matrix *A){
+
+    for(int i = 0; i < A->cols; i++){
+
+        for (int j = 0; j < A->rows; j++) {
+
+            if ( i != j ) {
+
+                if( fabs( A->data[ A->cols*i + j ] ) < 0.000000001 )
+                    return FALSE;
+            }
+        }
+    }
+
+    return TRUE;
+}
+
+Matrix * transpose(Matrix *A){
+
+    // Z = A^T
+    Matrix *Z = malloc( sizeof( Z ) );
+
+    // Initialize Matrix struct
+    Z->rows = A->cols;
+    Z->cols = A->rows;
+    Z->data = malloc( Z->rows*Z->cols*sizeof( Z->data ) );
+
+    for(int i = 0; i < Z->rows; i++){
+
+        for(int j = 0; j < Z->cols; j++){
+
+            Z->data[ Z->cols*i + j ] = A->data[ A->cols*j + i ];
+        }
+    }
+
+    return Z;
 }

@@ -18,4 +18,10 @@ int equals(Matrix *x, Matrix *x_solve, double epsilon);
 
 void copy(Matrix *x, Matrix *y);
 
+int is_simetric(Matrix *A);
+
+int is_diagonal(Matrix *A);
+
+Matrix * transpose(Matrix *A);
+
 #endif
