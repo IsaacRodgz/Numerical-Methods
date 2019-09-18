@@ -228,3 +228,64 @@ void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double ep
 
     printf("\nAlgorithm could not converge after %d iterations\n", numIters);
 }
+
+void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon){
+    /*
+    for (int i = 0; i < A->rows; i++) {
+
+        double* v = malloc( (A->rows-i) * sizeof *v );
+
+        int curr_row = i;
+
+        for (int j = 0; j < (A->rows-i); j++) {
+            v[j] = A->data[ A->rows*curr_row + i ];
+            curr_row++;
+        }
+
+        double norm = 0;
+        for (int j = 0; j < (A->rows-i); j++) {
+            norm += v[j]*v[j];
+        }
+        norm = sqrt(norm);
+
+        v[0] += norm*( v[0]>=0? 1 : -1 );
+
+        free(v);
+    }
+    */
+
+    // Calculate r_00
+
+    double norm = 0;
+
+    for (int i = 0; i < A->rows; i++) {
+        norm += A->data[A->cols*i] * A->data[A->cols*i];
+    }
+
+    norm = sqrt(norm);
+    R->data[0] = norm;
+
+    // Calculate q_0
+
+    for (int i = 0; i < Q->rows; i++) {
+        Q->data[Q->cols*i] = A->data[A->cols*i] * (1/norm);
+    }
+
+    // Find remaining of R and Q
+    int size = 1;
+
+    for (int i = 1; i < R->cols; i++) {
+
+        for (int j = 0; j < size; j++) {
+
+            double dot = 0;
+
+            for (int k = 0; k < A->rows; k++) {
+
+                dot += Q->data[ Q->cols*k + j ] * A->data[ A->cols*k + size ];
+            }
+        }
+
+        size++;
+    }
+}
