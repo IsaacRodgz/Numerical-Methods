@@ -14,4 +14,6 @@ void rayleighSolver(Matrix * A, Matrix * eigenVect, double * lambda, int num_ite
 
 void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double epsilon, int k);
 
+void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double epsilon);
+
 #endif

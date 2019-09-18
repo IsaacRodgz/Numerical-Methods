@@ -1,13 +1,12 @@
 /*
 Author: Isaac Rodríguez Bribiesca
-Date: 2019-08-26
-Description: This program includes functions that solve systems A*x = b of n equations with n variables,
-through two different iterative methodos methods, namely, Jacobi and Gauss-Seidel.
+Date: 2019-09-18
 */
 
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include <omp.h>
 #include "solve_iterative3.h"
 #include "solve_iterative2.h"
 #include "matrix_struct.h"
@@ -106,4 +105,126 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
         FI = multiply(Q, FI);
     }
 
+}
+
+void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double epsilon){
+
+    // Temp array for p_k.T * A * p_k
+
+    double* temp = malloc( A->rows * sizeof *temp );
+
+    // Calculate A * x
+
+    #pragma omp parallel for
+    for (int j = 0; j < A->rows; ++j){
+
+        double sum = 0;
+
+        for (int k = 0; k < A->rows; ++k){
+
+            sum += A->data[ j*A->cols + k ]*x->data[k];
+        }
+        temp[j] = sum;
+    }
+
+    Matrix *r = malloc( sizeof( r ) );
+    r->rows = b->rows;
+    r->cols = b->cols;
+    r->data = malloc( r->rows * r->cols * sizeof( r->data ) );
+
+    // Initialize r_0 = b - A*x
+
+    for (int i = 0; i < r->rows; i++) {
+        r->data[i] = b->data[i] - temp[i];
+    }
+
+    Matrix *p = malloc( sizeof( p ) );
+    p->rows = r->rows;
+    p->cols = r->cols;
+    p->data = malloc( p->rows * p->cols * sizeof( p->data ) );
+
+    // Initialize p_0 = r_0
+
+    for (int i = 0; i < p->rows; i++) {
+        p->data[i] = r->data[i];
+    }
+
+    double alpha = 0;
+    double beta = 0;
+
+    double rNorm_old = 0;
+
+    #pragma omp parallel for reduction(+:num)
+    for (int j = 0; j < r->rows; ++j)
+        rNorm_old += r->data[j] * r->data[j];
+
+    for (int i = 0; i < numIters; i++) {
+
+        // Calculate A * p_k
+
+        #pragma omp parallel for
+        for (int j = 0; j < A->rows; ++j){
+
+            double sum = 0;
+
+            for (int k = 0; k < A->rows; ++k){
+
+                sum += A->data[ j*A->cols + k ]*p->data[k];
+            }
+            temp[j] = sum;
+        }
+
+        // Calculate alpha_k = (p_k * r_k) / (p_k * A * p_k)
+
+        double denom = 0;
+        #pragma omp parallel for reduction(+:denom)
+        for (int j = 0; j < p->rows; ++j)
+            denom += p->data[j] * temp[j];
+
+        alpha = rNorm_old/denom;
+
+        // Update x_k+1 = x_k + alpha*p_k
+
+        for (int j = 0; j < x->rows; j++) {
+            x->data[j] += alpha*p->data[j];
+        }
+
+        double rNorm_new = 0;
+
+        // Update r_k+1 = r_k - alpha*A*p_k
+        for (int j = 0; j < r->rows; j++) {
+            r->data[j] -= alpha*temp[j];
+            rNorm_new += r->data[j] * r->data[j];
+        }
+
+        if ( sqrt(rNorm_new) < epsilon ) {
+            printf("\nAlgorithm converged after %d iterations\n\n", i+1);
+            return;
+        }
+
+        // Calculate beta_k = () / ()
+        /*
+        num = 0;
+        denom = 0;
+
+        #pragma omp parallel for reduction(+:num)
+        for (int j = 0; j < r->rows; ++j)
+            num += r->data[j] * r->data[j];
+
+        #pragma omp parallel for reduction(+:denom)
+        for (int j = 0; j < p->rows; ++j)
+            denom += p->data[j] * p->data[j];
+        */
+        beta = rNorm_new/rNorm_old;
+
+        // Update p_k+1 = r_k+1 + beta*p_k
+
+        for (int j = 0; j < p->rows; j++) {
+            p->data[j] = r->data[j] + beta*p->data[j];
+        }
+
+        rNorm_old = rNorm_new;
+    }
+
+    printf("\nAlgorithm could not converge after %d iterations\n", numIters);
 }
