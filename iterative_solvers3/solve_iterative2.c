@@ -104,6 +104,8 @@ void powerSolver(Matrix * A, Matrix * eigenVectOld, double* lambdaInit, int num_
     }
     else
         printf("\nMethod did not converge in given iterations. Returning last solution.\n\n");
+
+    free(eigenVectNew);
 }
 
 void deflation(Matrix * eigenVects, Matrix * eigenVectInit, int currCol){
@@ -279,7 +281,9 @@ void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon){
 
         if ( fabs( A->data[p*A->cols + q] ) < epsilon ) {
             printf("\nConverged at iteration: %d\n\n", i+1);
-            break;
+            free(FP);
+            free(FQ);
+            return;
         }
 
         // Copy columns p and q of matrix of eigenvectors F
@@ -323,5 +327,8 @@ void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon){
         }
     }
 
-    printf("\nSe llego a la convergencia en %d iteraciones\n", i+1);
+    printf("\nMethod did not converge in given iterations. Returning last solution.\n");
+
+    free(FP);
+    free(FQ);
 }

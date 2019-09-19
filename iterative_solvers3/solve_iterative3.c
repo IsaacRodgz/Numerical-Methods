@@ -84,16 +84,51 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
     Q->cols = B->cols;
     Q->data = malloc( Q->rows * Q->cols * sizeof( Q->data ) );
 
+    // Temp matrix for multiply( FI, A )
+
+    Matrix *T = malloc( sizeof( T ) );
+    T->rows = FI->rows;
+    T->cols = A->cols;
+    T->data = malloc( T->rows * T->cols * sizeof( T->data ) );
+
     // Iterate with Jacobi to update Eigenvectors FI with FI[m][n] = Q[m][m]*FI[m][n]
     printf("\n*********************\n");
     printf("Iterating in subspace");
     printf("\n*********************\n\n");
     for (int i = 0; i < num_iters; i++) {
 
-        B = multiply( multiply( FI, A ), transpose(FI) );
+        // T = multiply( FI, A )
+
+        int l, k;
+        #pragma omp parallel for private(l,k)
+        for(int j = 0; j < T->rows; j++){
+            for(k = 0; k < T->cols; k++){
+
+                T->data[ T->cols*j + k ] = 0;
+
+                for(l = 0; l < A->rows; l++){
+                    T->data[ T->cols*j + k ] += FI->data[ FI->cols*j + l ] * A->data[ A->cols*l + k ];
+                }
+            }
+        }
+
+        // B = multiply( T, transpose(FI) );
+
+        #pragma omp parallel for private(l,k)
+        for(int j = 0; j < B->rows; j++){
+            for(k = 0; k < B->cols; k++){
+
+                B->data[ B->cols*j + k ] = 0;
+
+                for(l = 0; l < A->rows; l++){
+                    B->data[ B->cols*j + k ] += T->data[ T->cols*j + l ] * FI->data[ FI->cols*k + l ];
+                }
+            }
+        }
+
 
         if (is_diagonal(B) == TRUE) {
-            printf("\nMethod converged after %d iterations\n", i);
+            printf("\nSubspaceSolver converged after %d iterations\n", i);
             break;
         }
 
@@ -102,7 +137,19 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
         printf("\n*********************\n\n");
         jacobiSolver(B, Q, num_iters, epsilon);
 
-        FI = multiply(Q, FI);
+        // FI = multiply(Q, FI);
+
+        #pragma omp parallel for private(l,k)
+        for(int j = 0; j < FI->rows; j++){
+            for(k = 0; k < FI->cols; k++){
+
+                FI->data[ FI->cols*j + k ] = 0;
+
+                for(l = 0; l < FI->rows; l++){
+                    FI->data[ B->cols*j + k ] += Q->data[ Q->cols*j + l ] * FI->data[ FI->cols*l + k ];
+                }
+            }
+        }
     }
 
 }

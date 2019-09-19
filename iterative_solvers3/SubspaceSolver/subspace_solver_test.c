@@ -29,7 +29,7 @@ void test_solve_subspace(const char *matrix_filename, int numEigen){
     eigenVals->cols = 1;
     eigenVals->data = malloc( eigenVals->rows * eigenVals->cols * sizeof( eigenVals->data ) );
 
-    int numIters = 10;
+    int numIters = 6;
     double epsilon = 0.00001;
 
     subspaceSolver(A, eigenVects, eigenVals, numIters, epsilon, k);
