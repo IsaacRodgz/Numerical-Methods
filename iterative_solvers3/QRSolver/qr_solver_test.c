@@ -25,6 +25,8 @@ void test_solve_qr(const char *matrix_filename){
 
     QRFactor(A, eigenVects, eigenVals, numIters, epsilon);
 
+    print_matrix(eigenVals);
+
 }
 
 void main(int argc, char* argv[]){

@@ -274,17 +274,53 @@ void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon){
     // Find remaining of R and Q
     int size = 1;
 
+    // Vector to form new q's
+    double* a_temp = malloc( A->rows * sizeof *a_temp );
+
     for (int i = 1; i < R->cols; i++) {
+
+        // Initialize a_temp to column A[i]
+        for (int j = 0; j < A->rows; j++) {
+            a_temp[j] = A->data[ A->cols*j + size ];
+        }
+
+        // Sum{q*r}
+        double sum = 0;
 
         for (int j = 0; j < size; j++) {
 
             double dot = 0;
 
             for (int k = 0; k < A->rows; k++) {
-
+                //printf("Q[%d], A[%d]\n", Q->cols*k + j, A->cols*k + size);
                 dot += Q->data[ Q->cols*k + j ] * A->data[ A->cols*k + size ];
             }
+
+            R->data[ Q->cols*j + size ] = dot;
+
+            for (int k = 0; k < A->rows; k++) {
+                a_temp[j] -= dot * Q->data[ Q->cols*k + j];
+            }
+
+            //printf("--\n");
         }
+        //printf("\n\n");
+
+        norm = 0;
+        for (int j = 0; j < A->rows; j++) {
+            norm += a_temp[j] * a_temp[j];
+        }
+        norm = sqrt(norm);
+
+        // Calculate q_i
+
+        for (int j = 0; j < Q->rows; j++) {
+            Q->data[Q->cols*j + i] = a_temp[j] * (1/norm);
+        }
+
+        // Calculate r_ii
+
+        R->data[ (Q->cols+1)*size ] = norm;
 
         size++;
     }
