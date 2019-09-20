@@ -7,56 +7,122 @@ Date: 2019-09-18
 #include <math.h>
 #include <stdio.h>
 #include <omp.h>
+#include "solve_matrix_direct.h"
 #include "solve_iterative3.h"
 #include "solve_iterative2.h"
 #include "matrix_struct.h"
 #define TRUE 1
 #define FALSE 0
 
-void rayleighSolver(Matrix * A, Matrix * eigenVect, double * lambda, int num_iters, double epsilon){
+void rayleighSolver(Matrix * A, Matrix * eigenVect, double * lambdaInit, int num_iters, double epsilon){
 
-    Matrix *r;
+    // Make a copy of A
+    Matrix *A_shifted = malloc( sizeof( A_shifted ) );
+    A_shifted->rows = A->rows;
+    A_shifted->cols = A->cols;
+    A_shifted->data = malloc( A_shifted->rows * A_shifted->cols * sizeof( A_shifted->data ) );
 
-    Matrix *Ap = malloc( sizeof( Ap ) );
-    Ap->rows = A->rows;
-    Ap->cols = A->cols;
-    Ap->data = malloc( Ap->rows * Ap->cols * sizeof( Ap->data ) );
+    copy(A, A_shifted);
 
-    copy(A, Ap);
-
-    double norm = vectNorm(eigenVect);
-    for (int k = 0; k < eigenVect->rows; k++) {
-        eigenVect->data[k] *= eigenVect->data[k]*(1/norm);
+    // Calculate A - sigma*I. Shifted A.
+    for (int i = 0; i < A_shifted->rows; i++) {
+        A_shifted->data[(A_shifted->rows+1)*i] -= *(lambdaInit);
     }
 
-    int i;
-    for (i = 0; i < num_iters-1; i++) {
+    // Flag to indicate Convergence
+    int converged = FALSE;
 
-        for (int k = 0; k < Ap->cols; k++) {
-            Ap->data[k*(Ap->cols+1)] = A->data[k*(A->cols+1)] - (*lambda);
+    // Size of matrix and vectors
+    int rows = A->rows;
+
+    // Variable to update dominant eigenvalue
+    double lambdaNew;
+
+    // Helper variables for dot product of vectors
+    double accum;
+
+    // Variable to iterate algorithm
+    int i = 0;
+
+    // Factor matrix A
+    int* pivots = malloc(A_shifted->rows * sizeof *pivots);
+    factor_doolittle_pivoting(A_shifted, pivots);
+
+    // Vector to calculate v_(k-1)
+    Matrix *eigenVectOld = malloc( sizeof( eigenVectOld ) );
+    eigenVectOld->rows = A->rows;
+    eigenVectOld->cols = 1;
+    eigenVectOld->data = malloc( eigenVectOld->rows * eigenVectOld->cols * sizeof( eigenVectOld->data ) );
+
+    for (int i = 0; i < eigenVectOld->rows; i++) {
+        eigenVectOld->data[i] = (double)rand()/RAND_MAX*2.0-1.0;
+    }
+
+    // Vector to calculate v_k
+    Matrix *eigenVectNew = malloc( sizeof( eigenVectNew ) );
+
+    // Start iterations
+
+    for (i = 0; i < num_iters; i++) {
+
+        // Calculate w =  A * v_(k-1)
+        eigenVectNew = solve_doolittle_pivoting(A_shifted, eigenVectOld, pivots);
+
+        // Calculate v_(k) = w/norm(w)
+        double norm = vectNorm(eigenVectNew);
+        for (int k = 0; k < rows; k++)
+            eigenVectOld->data[k] = eigenVectNew->data[k] * (1/norm);
+
+        // Calculate dominant eigenvalue and store in lambdaNew
+
+        #pragma omp parallel for
+        for (int j = 0; j < A->rows; ++j){
+
+            double sum = 0;
+
+            for (int k = 0; k < A->rows; ++k){
+
+                sum += A->data[ j*A->cols + k ]*eigenVectOld->data[k];
+            }
+            eigenVectNew->data[j] = sum;
         }
 
-        r = multiply(Ap, eigenVect);
+        accum = 0;
 
-        double dot_prod = 0;
-        for (int k = 0; k < eigenVect->rows; k++) {
-            dot_prod += eigenVect->data[k] * r->data[k];
-        }
+        #pragma omp parallel for reduction(+:accum)
+        for (int j = 0; j < eigenVectNew->rows; ++j)
+            accum += eigenVectNew->data[j] * eigenVectOld->data[j];
 
-        if ( fabs(dot_prod) < epsilon ) {
+        lambdaNew = accum;
+
+        // Check for convergence and stop or update the eigenvalue
+
+        if ( fabs( (*lambdaInit) - lambdaNew ) < epsilon ) {
+            (*lambdaInit) = lambdaNew;
+            converged = TRUE;
             break;
         }
 
-        (*lambda) += dot_prod;
-
+        swap(&eigenVectNew, &eigenVectOld);
+        (*lambdaInit) = lambdaNew;
     }
 
-    printf("\nSe llego a la convergencia en %d iteraciones\n", i+1);
+    if (converged == TRUE) {
+        printf("----------------------------------------------\n");
+        printf("\nConverged after %d iterations\n\n", i);
+        for (int i = 0; i < eigenVect->rows; i++) {
+            eigenVect->data[i] = eigenVectOld->data[i];
+        }
+    }
+    else
+        printf("\nMethod did not converge in given iterations. Returning last solution.\n\n");
 
-    free(r->data);
-    free(r);
-    free(Ap->data);
-    free(Ap);
+    free(A_shifted->data);
+    free(A_shifted);
+    free(eigenVectOld->data);
+    free(eigenVectOld);
+    free(eigenVectNew->data);
+    free(eigenVectNew);
 }
 
 void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double epsilon, int k) {
@@ -370,5 +436,29 @@ void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon){
         R->data[ (Q->cols+1)*size ] = norm;
 
         size++;
+    }
+}
+
+void QRSolve(Matrix * A,  Matrix * Q, Matrix * R, int numIters, double epsilon){
+
+    for (int i = 0; i < numIters; i++) {
+
+        QRFactor(A, Q, R, numIters, epsilon);
+
+        print_matrix(Q);
+        print_matrix(R);
+
+        int j, k, l;
+        #pragma omp parallel for private(k,l)
+        for(j = 0; j < A->rows; j++){
+            for(k = 0; k < A->cols; k++){
+
+                A->data[ A->cols*j + k ] = 0;
+
+                for(l = 0; l < Q->rows; l++){
+                    A->data[ A->cols*j + k ] += R->data[ R->cols*j + l ] * Q->data[ Q->cols*l + k ];
+                }
+            }
+        }
     }
 }

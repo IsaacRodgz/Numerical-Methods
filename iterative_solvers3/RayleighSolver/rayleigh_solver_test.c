@@ -8,15 +8,24 @@ void test_solve_rayleigh(const char *matrix_filename, const char *vector_filenam
     Matrix *A;
     A = read_matrix(matrix_filename, 1);
 
-    Matrix *eigenVect;
-    eigenVect = read_matrix(vector_filename, 1);
+    Matrix *eigenVect = malloc( sizeof( eigenVect ) );
+    eigenVect->rows = A->rows;
+    eigenVect->cols = 1;
+    eigenVect->data = malloc( eigenVect->rows * eigenVect->cols * sizeof( *eigenVect->data ) );
 
     int numIters = 1000;
     double epsilon = 0.00001;
-    double lambda = -6.892;
+    double lambda = -4;
 
+    printf("\nValor propio inicial: %e\n", lambda);
     rayleighSolver(A, eigenVect, &lambda, numIters, epsilon);
+    printf("\nValor propio aproximado: %e\n\n", lambda);
 
+    A = read_matrix(matrix_filename, 0);
+
+    lambda = -6.8;
+    printf("Valor propio inicial: %e\n", lambda);
+    rayleighSolver(A, eigenVect, &lambda, numIters, epsilon);
     printf("\nValor propio aproximado: %e\n\n", lambda);
 
 }

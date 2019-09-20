@@ -18,4 +18,6 @@ void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double ep
 
 void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon);
 
+void QRSolve(Matrix * A,  Matrix * Q, Matrix * R, int numIters, double epsilon);
+
 #endif
