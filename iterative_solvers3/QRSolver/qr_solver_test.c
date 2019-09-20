@@ -20,12 +20,12 @@ void test_solve_qr(const char *matrix_filename){
     eigenVals->cols = A->cols;
     eigenVals->data = malloc( eigenVals->rows * eigenVals->cols * sizeof( eigenVals->data ) );
 
-    int numIters = 1;
+    int numIters = 100;
     double epsilon = 0.00001;
 
     QRSolve(A, eigenVects, eigenVals, numIters, epsilon);
 
-    //print_matrix(A);
+    print_matrix(A);
 
 }
 

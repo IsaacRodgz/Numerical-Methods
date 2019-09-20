@@ -343,29 +343,6 @@ void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double ep
 }
 
 void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon){
-    /*
-    for (int i = 0; i < A->rows; i++) {
-
-        double* v = malloc( (A->rows-i) * sizeof *v );
-
-        int curr_row = i;
-
-        for (int j = 0; j < (A->rows-i); j++) {
-            v[j] = A->data[ A->rows*curr_row + i ];
-            curr_row++;
-        }
-
-        double norm = 0;
-        for (int j = 0; j < (A->rows-i); j++) {
-            norm += v[j]*v[j];
-        }
-        norm = sqrt(norm);
-
-        v[0] += norm*( v[0]>=0? 1 : -1 );
-
-        free(v);
-    }
-    */
 
     // Calculate r_00
 
@@ -384,40 +361,31 @@ void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon){
         Q->data[Q->cols*i] = A->data[A->cols*i] * (1/norm);
     }
 
-    // Find remaining of R and Q
-    int size = 1;
-
     // Vector to form new q's
     double* a_temp = malloc( A->rows * sizeof *a_temp );
 
-    for (int i = 1; i < R->cols; i++) {
+    for (int i = 1; i < A->cols; i++) {
 
         // Initialize a_temp to column A[i]
         for (int j = 0; j < A->rows; j++) {
-            a_temp[j] = A->data[ A->cols*j + size ];
+            a_temp[j] = A->data[ A->cols*j + i ];
         }
 
-        // Sum{q*r}
-        double sum = 0;
-
-        for (int j = 0; j < size; j++) {
+        for (int j = 0; j < i; j++) {
 
             double dot = 0;
 
             for (int k = 0; k < A->rows; k++) {
                 //printf("Q[%d], A[%d]\n", Q->cols*k + j, A->cols*k + size);
-                dot += Q->data[ Q->cols*k + j ] * A->data[ A->cols*k + size ];
+                dot += Q->data[ Q->cols*k + j ] * A->data[ A->cols*k + i ];
             }
 
-            R->data[ Q->cols*j + size ] = dot;
+            R->data[ Q->cols*j + i ] = dot;
 
             for (int k = 0; k < A->rows; k++) {
-                a_temp[j] -= dot * Q->data[ Q->cols*k + j];
+                a_temp[k] -= dot * Q->data[ Q->cols*k + j];
             }
-
-            //printf("--\n");
         }
-        //printf("\n\n");
 
         norm = 0;
         for (int j = 0; j < A->rows; j++) {
@@ -433,9 +401,13 @@ void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon){
 
         // Calculate r_ii
 
-        R->data[ (Q->cols+1)*size ] = norm;
+        R->data[ (Q->cols+1)*i ] = 0;
 
-        size++;
+        for (int j = 0; j < A->rows; j++) {
+            //printf("Q[%d], A[%d]\n", Q->cols*k + j, A->cols*k + size);
+            R->data[ (Q->cols+1)*i ] += Q->data[ Q->cols*j + i ] * A->data[ A->cols*j + i ];
+        }
+
     }
 }
 
@@ -444,9 +416,6 @@ void QRSolve(Matrix * A,  Matrix * Q, Matrix * R, int numIters, double epsilon){
     for (int i = 0; i < numIters; i++) {
 
         QRFactor(A, Q, R, numIters, epsilon);
-
-        print_matrix(Q);
-        print_matrix(R);
 
         int j, k, l;
         #pragma omp parallel for private(k,l)
