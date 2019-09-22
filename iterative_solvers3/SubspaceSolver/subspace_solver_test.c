@@ -29,7 +29,7 @@ void test_solve_subspace(const char *matrix_filename, int numEigen){
     eigenVals->cols = 1;
     eigenVals->data = malloc( eigenVals->rows * eigenVals->cols * sizeof( eigenVals->data ) );
 
-    int numIters = 6;
+    int numIters = 10;
     double epsilon = 0.00001;
 
     subspaceSolver(A, eigenVects, eigenVals, numIters, epsilon, k);
@@ -37,6 +37,7 @@ void test_solve_subspace(const char *matrix_filename, int numEigen){
     printf("----------------------------------------------\n\n");
     printf("Dominant eigenvalues found:\n");
     print_matrix( eigenVals );
+
     printf("\nDominant eigenvectors found:\n");
     print_matrix( eigenVects );
 */

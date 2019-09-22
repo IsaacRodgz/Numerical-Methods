@@ -14,7 +14,7 @@ void test_solve_cgradient(const char *matrix_filename, const char *vector_filena
     Matrix *x;
     x = read_matrix(vector_filename, 1);
 
-    int numIters = 50;
+    int numIters = 130;
     double epsilon = 0.000000001;
 
     cGradientSolver(A, b, x, numIters, epsilon);

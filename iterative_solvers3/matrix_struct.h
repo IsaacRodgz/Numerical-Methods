@@ -22,6 +22,8 @@ int is_simetric(Matrix *A);
 
 int is_diagonal(Matrix *A);
 
+int is_diagonal2(Matrix *A);
+
 Matrix * transpose(Matrix *A);
 
 #endif

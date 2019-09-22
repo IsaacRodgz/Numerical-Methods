@@ -179,9 +179,28 @@ int is_diagonal(Matrix *A){
 
         for (int j = 0; j < A->rows; j++) {
 
-            if ( i != j ) {
+            if ( i == j ) {
 
                 if( fabs( A->data[ A->cols*i + j ] ) < 0.000000001 )
+                    return FALSE;
+            }
+        }
+    }
+
+    return TRUE;
+}
+
+//Verify if A is diagonal
+
+int is_diagonal2(Matrix *A){
+
+    for(int i = 0; i < A->cols; i++){
+
+        for (int j = 0; j < A->rows; j++) {
+
+            if ( i != j ) {
+
+                if( fabs( A->data[ A->cols*i + j ] ) > 0.000000001 )
                     return FALSE;
             }
         }

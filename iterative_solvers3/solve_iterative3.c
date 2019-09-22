@@ -108,7 +108,7 @@ void rayleighSolver(Matrix * A, Matrix * eigenVect, double * lambdaInit, int num
     }
 
     if (converged == TRUE) {
-        printf("----------------------------------------------\n");
+        //printf("----------------------------------------------\n");
         printf("\nConverged after %d iterations\n\n", i);
         for (int i = 0; i < eigenVect->rows; i++) {
             eigenVect->data[i] = eigenVectOld->data[i];
@@ -129,12 +129,6 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
 
     // FI - matrix of eigenvectors of A
     // LA - matrix of eigenvalues of A
-
-    // Get initial guess with power method and deflation
-    printf("\n\n**************************\n");
-    printf("Solving by power iteration");
-    printf("\n\n**************************\n");
-    kPowerSolver(A, FI, LA, num_iters, epsilon, k);
 
     // B[m][m] = FI[m][n]*A[n][n]*FI[n][m]
 
@@ -157,11 +151,34 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
     T->cols = A->cols;
     T->data = malloc( T->rows * T->cols * sizeof( T->data ) );
 
+    // Initialize and Normalize initial vector v_0
+
+    for (int i = 0; i < FI->rows; i++) {
+        FI->data[(FI->cols)*i] = (double)rand()/RAND_MAX*2.0-1.0;
+    }
+
+    double norm = 0;
+
+    for (int i = 0; i < FI->rows; i++)
+        norm += (FI->data[(FI->cols)*i] * FI->data[(FI->cols)*i]);
+    norm = sqrt(norm);
+
+    for (int i = 0; i < FI->rows; i++)
+        FI->data[(FI->cols)*i] *= (1/norm);
+
     // Iterate with Jacobi to update Eigenvectors FI with FI[m][n] = Q[m][m]*FI[m][n]
     printf("\n*********************\n");
     printf("Iterating in subspace");
     printf("\n*********************\n\n");
     for (int i = 0; i < num_iters; i++) {
+
+        // Get initial guess with power method and deflation
+        printf("\n\n**************************\n");
+        printf("Solving by power iteration");
+        printf("\n\n**************************\n");
+        kPowerSolver(A, FI, LA, 1, epsilon, k);
+
+        //print_matrix(FI);
 
         // T = multiply( FI, A )
 
@@ -192,8 +209,7 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
             }
         }
 
-
-        if (is_diagonal(B) == TRUE) {
+        if (is_diagonal2(B) == TRUE) {
             printf("\nSubspaceSolver converged after %d iterations\n", i);
             break;
         }
@@ -221,6 +237,14 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
 }
 
 void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double epsilon){
+
+    // Verify that A is simetric
+
+    if( is_simetric(A) == FALSE){
+
+        printf("\nA is not symmetric. System cannot be solved by conjugate gradient.\n\n");
+        exit(-1);
+    }
 
     // Temp array for p_k.T * A * p_k
 
@@ -315,19 +339,6 @@ void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double ep
             return;
         }
 
-        // Calculate beta_k = () / ()
-        /*
-        num = 0;
-        denom = 0;
-
-        #pragma omp parallel for reduction(+:num)
-        for (int j = 0; j < r->rows; ++j)
-            num += r->data[j] * r->data[j];
-
-        #pragma omp parallel for reduction(+:denom)
-        for (int j = 0; j < p->rows; ++j)
-            denom += p->data[j] * p->data[j];
-        */
         beta = rNorm_new/rNorm_old;
 
         // Update p_k+1 = r_k+1 + beta*p_k

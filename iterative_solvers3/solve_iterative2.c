@@ -8,6 +8,7 @@ through two different iterative methodos methods, namely, Jacobi and Gauss-Seide
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include "solve_matrix_direct.h"
 #include "solve_iterative2.h"
 #include "matrix_struct.h"
 #define TRUE 1
@@ -163,7 +164,7 @@ void kPowerSolver(Matrix * A, Matrix * eigenVects, Matrix * eigenVals, int num_i
         // Initialize and Normalize initial vector v_0
 
         for (int i = 0; i < eigenVectOld->rows; i++) {
-            eigenVectOld->data[i] = (double)rand()/RAND_MAX*2.0-1.0;
+            eigenVectOld->data[i] = eigenVects->data[(eigenVects->cols)*i];
         }
 
         double norm = vectNorm(eigenVectOld);
@@ -252,12 +253,12 @@ void maxOffDiagonal(Matrix * A, int* p, int* q){
 }
 
 void jacobiSolver(Matrix * A, Matrix * F, int num_iters, double epsilon){
-
+/*
     if ( is_simetric(A) == FALSE ) {
         printf("Matrix is not symmetric, cannot apply algorithm\n");
         exit(-1);
     }
-
+*/
     for (int i = 0; i < F->rows; i++) {
         for (int j = 0; j < F->cols; j++) {
             if (i == j)
