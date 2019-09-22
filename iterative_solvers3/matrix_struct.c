@@ -200,7 +200,7 @@ int is_diagonal2(Matrix *A){
 
             if ( i != j ) {
 
-                if( fabs( A->data[ A->cols*i + j ] ) > 0.000000001 )
+                if( fabs( A->data[ A->cols*i + j ] ) > 0.00001 )
                     return FALSE;
             }
         }

@@ -127,60 +127,45 @@ void rayleighSolver(Matrix * A, Matrix * eigenVect, double * lambdaInit, int num
 
 void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double epsilon, int k) {
 
-    // FI - matrix of eigenvectors of A
-    // LA - matrix of eigenvalues of A
+    // FI[n][p] - matrix of eigenvectors of A
+    // LA[p][p] - matrix of eigenvalues of A
 
-    // B[m][m] = FI[m][n]*A[n][n]*FI[n][m]
-
-    Matrix *B = malloc( sizeof( B ) );
-    B->rows = FI->rows;
-    B->cols = FI->rows;
-    B->data = malloc( B->rows * B->cols * sizeof( B->data ) );
-
-    // Factor B by jacobi: B[m][m] -> Q[m][m]*L[m][m]*Q[m][m]
+    // Q[n][p]
 
     Matrix *Q = malloc( sizeof( Q ) );
-    Q->rows = B->rows;
-    Q->cols = B->cols;
+    Q->rows = FI->rows;
+    Q->cols = FI->cols;
     Q->data = malloc( Q->rows * Q->cols * sizeof( Q->data ) );
 
-    // Temp matrix for multiply( FI, A )
+    // R[p][p]
+
+    Matrix *R = malloc( sizeof( R ) );
+    R->rows = LA->rows;
+    R->cols = LA->cols;
+    R->data = malloc( R->rows * R->cols * sizeof( R->data ) );
+
+    // Temp matrix for multiply( Q^T, A )
 
     Matrix *T = malloc( sizeof( T ) );
-    T->rows = FI->rows;
+    T->rows = Q->cols;
     T->cols = A->cols;
     T->data = malloc( T->rows * T->cols * sizeof( T->data ) );
 
-    // Initialize and Normalize initial vector v_0
+    // Initialize matrix of eigenvectors FI
 
-    for (int i = 0; i < FI->rows; i++) {
-        FI->data[(FI->cols)*i] = (double)rand()/RAND_MAX*2.0-1.0;
+    for (size_t i = 0; i < FI->rows; i++) {
+        for (int j = 0; j < FI->cols; j++) {
+            FI->data[FI->cols*i + j] = (double)rand()/RAND_MAX*2.0-1.0;
+        }
     }
 
-    double norm = 0;
-
-    for (int i = 0; i < FI->rows; i++)
-        norm += (FI->data[(FI->cols)*i] * FI->data[(FI->cols)*i]);
-    norm = sqrt(norm);
-
-    for (int i = 0; i < FI->rows; i++)
-        FI->data[(FI->cols)*i] *= (1/norm);
-
-    // Iterate with Jacobi to update Eigenvectors FI with FI[m][n] = Q[m][m]*FI[m][n]
-    printf("\n*********************\n");
-    printf("Iterating in subspace");
-    printf("\n*********************\n\n");
     for (int i = 0; i < num_iters; i++) {
 
-        // Get initial guess with power method and deflation
-        printf("\n\n**************************\n");
-        printf("Solving by power iteration");
-        printf("\n\n**************************\n");
-        kPowerSolver(A, FI, LA, 1, epsilon, k);
+        // Iterate in subspace
 
-        //print_matrix(FI);
+        QRFactor(FI, Q, R);
 
-        // T = multiply( FI, A )
+        // T = multiply( Q^T, A )
 
         int l, k;
         #pragma omp parallel for private(l,k)
@@ -190,36 +175,26 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
                 T->data[ T->cols*j + k ] = 0;
 
                 for(l = 0; l < A->rows; l++){
-                    T->data[ T->cols*j + k ] += FI->data[ FI->cols*j + l ] * A->data[ A->cols*l + k ];
+                    T->data[ T->cols*j + k ] += Q->data[ Q->cols*l + j ] * A->data[ A->cols*l + k ];
                 }
             }
         }
 
-        // B = multiply( T, transpose(FI) );
+        // LA = multiply( T, Q );
 
         #pragma omp parallel for private(l,k)
-        for(int j = 0; j < B->rows; j++){
-            for(k = 0; k < B->cols; k++){
+        for(int j = 0; j < LA->rows; j++){
+            for(k = 0; k < LA->cols; k++){
 
-                B->data[ B->cols*j + k ] = 0;
+                LA->data[ LA->cols*j + k ] = 0;
 
-                for(l = 0; l < A->rows; l++){
-                    B->data[ B->cols*j + k ] += T->data[ T->cols*j + l ] * FI->data[ FI->cols*k + l ];
+                for(l = 0; l < Q->rows; l++){
+                    LA->data[ LA->cols*j + k ] += T->data[ T->cols*j + l ] * Q->data[ Q->cols*l + k ];
                 }
             }
         }
 
-        if (is_diagonal2(B) == TRUE) {
-            printf("\nSubspaceSolver converged after %d iterations\n", i);
-            break;
-        }
-
-        printf("\n*********************\n");
-        printf("Iterating Jacobi");
-        printf("\n*********************\n\n");
-        jacobiSolver(B, Q, num_iters, epsilon);
-
-        // FI = multiply(Q, FI);
+        // FI = multiply( A, Q );
 
         #pragma omp parallel for private(l,k)
         for(int j = 0; j < FI->rows; j++){
@@ -227,13 +202,20 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
 
                 FI->data[ FI->cols*j + k ] = 0;
 
-                for(l = 0; l < FI->rows; l++){
-                    FI->data[ B->cols*j + k ] += Q->data[ Q->cols*j + l ] * FI->data[ FI->cols*l + k ];
+                for(l = 0; l < Q->rows; l++){
+                    FI->data[ FI->cols*j + k ] += A->data[ A->cols*j + l ] * Q->data[ Q->cols*l + k ];
                 }
             }
         }
+
+
+        if (is_diagonal2(LA) == TRUE) {
+            printf("\nSubspace method converged after %d iterations\n", i);
+            return;
+        }
     }
 
+    printf("\nSubspace method did not converged after %d iterations. Returning last computations\n", num_iters);
 }
 
 void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double epsilon){
@@ -353,7 +335,7 @@ void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double ep
     printf("\nAlgorithm could not converge after %d iterations\n", numIters);
 }
 
-void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon){
+void QRFactor(Matrix * A, Matrix * Q, Matrix * R){
 
     // Calculate r_00
 
@@ -418,15 +400,39 @@ void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon){
             //printf("Q[%d], A[%d]\n", Q->cols*k + j, A->cols*k + size);
             R->data[ (Q->cols+1)*i ] += Q->data[ Q->cols*j + i ] * A->data[ A->cols*j + i ];
         }
-
     }
+
+    free(a_temp);
 }
 
-void QRSolve(Matrix * A,  Matrix * Q, Matrix * R, int numIters, double epsilon){
+void QRSolve(Matrix * A,  Matrix * FI, int numIters, double epsilon){
+
+    Matrix *Q = malloc( sizeof( Q ) );
+    Q->rows = A->rows;
+    Q->cols = A->cols;
+    Q->data = malloc( Q->rows * Q->cols * sizeof( Q->data ) );
+
+    Matrix *R = malloc( sizeof( R ) );
+    R->rows = A->rows;
+    R->cols = A->cols;
+    R->data = malloc( R->rows * R->cols * sizeof( R->data ) );
+
+    // Initialize FI with Identity matrix
+
+    for (int i = 0; i < FI->rows; i++) {
+        for (int j = 0; j < FI->cols; j++) {
+            if(i!=j)
+                FI->data[i*FI->cols + j] = 0.0;
+            else
+                FI->data[i*FI->cols + j] = 1.0;
+        }
+    }
 
     for (int i = 0; i < numIters; i++) {
 
-        QRFactor(A, Q, R, numIters, epsilon);
+        QRFactor(A, Q, R);
+
+        // Update eigenvalues
 
         int j, k, l;
         #pragma omp parallel for private(k,l)
@@ -437,6 +443,20 @@ void QRSolve(Matrix * A,  Matrix * Q, Matrix * R, int numIters, double epsilon){
 
                 for(l = 0; l < Q->rows; l++){
                     A->data[ A->cols*j + k ] += R->data[ R->cols*j + l ] * Q->data[ Q->cols*l + k ];
+                }
+            }
+        }
+
+        // Update eigenvectors
+
+        #pragma omp parallel for private(k,l)
+        for(j = 0; j < FI->rows; j++){
+            for(k = 0; k < FI->cols; k++){
+
+                FI->data[ FI->cols*j + k ] = 0;
+
+                for(l = 0; l < Q->rows; l++){
+                    FI->data[ FI->cols*j + k ] += FI->data[ FI->cols*j + l ] * Q->data[ Q->cols*l + k ];
                 }
             }
         }

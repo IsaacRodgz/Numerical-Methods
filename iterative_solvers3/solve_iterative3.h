@@ -16,8 +16,8 @@ void subspaceSolver(Matrix * A, Matrix * FI, Matrix * LA, int num_iters, double 
 
 void cGradientSolver(Matrix * A, Matrix * b, Matrix * x, int numIters, double epsilon);
 
-void QRFactor(Matrix * A, Matrix * Q, Matrix * R, int numIters, double epsilon);
+void QRFactor(Matrix * A, Matrix * Q, Matrix * R);
 
-void QRSolve(Matrix * A,  Matrix * Q, Matrix * R, int numIters, double epsilon);
+void QRSolve(Matrix * A,  Matrix * FI, int numIters, double epsilon);
 
 #endif

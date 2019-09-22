@@ -19,28 +19,26 @@ void test_solve_subspace(const char *matrix_filename, int numEigen){
 
     // Matrix that will contain the k dominant eigenvetors corresponding to the dominant eigenvalues found
     Matrix *eigenVects = malloc( sizeof( eigenVects ) );
-    eigenVects->rows = k;
-    eigenVects->cols = A->rows;
+    eigenVects->rows = A->rows;
+    eigenVects->cols = k;
     eigenVects->data = malloc( eigenVects->rows * eigenVects->cols * sizeof( eigenVects->data ) );
 
     // Vector that will contain the k dominant eigenvalues corresponding to the dominant eigenvectors found
     Matrix *eigenVals = malloc( sizeof( eigenVals ) );
     eigenVals->rows = k;
-    eigenVals->cols = 1;
+    eigenVals->cols = k;
     eigenVals->data = malloc( eigenVals->rows * eigenVals->cols * sizeof( eigenVals->data ) );
 
-    int numIters = 10;
-    double epsilon = 0.00001;
+    int numIters = 200;
+    double epsilon = 0.00000001;
 
     subspaceSolver(A, eigenVects, eigenVals, numIters, epsilon, k);
-/*
-    printf("----------------------------------------------\n\n");
-    printf("Dominant eigenvalues found:\n");
-    print_matrix( eigenVals );
 
-    printf("\nDominant eigenvectors found:\n");
-    print_matrix( eigenVects );
-*/
+    printf("----------------------------------------------\n\n");
+    printf("Eeigenvalues found:\n");
+    for (int i = 0; i < eigenVals->rows; i++) {
+        printf("%e\n", eigenVals->data[(eigenVals->cols+1)*i]);
+    }
 }
 
 void main(int argc, char* argv[]){

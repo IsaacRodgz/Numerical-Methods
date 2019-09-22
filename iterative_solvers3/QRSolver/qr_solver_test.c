@@ -14,16 +14,10 @@ void test_solve_qr(const char *matrix_filename){
     eigenVects->cols = A->cols;
     eigenVects->data = malloc( eigenVects->rows * eigenVects->cols * sizeof( eigenVects->data ) );
 
-    // Vector that will contain the k dominant eigenvalues corresponding to the dominant eigenvectors found
-    Matrix *eigenVals = malloc( sizeof( eigenVals ) );
-    eigenVals->rows = A->rows;
-    eigenVals->cols = A->cols;
-    eigenVals->data = malloc( eigenVals->rows * eigenVals->cols * sizeof( eigenVals->data ) );
-
     int numIters = 65;
     double epsilon = 0.000000001;
 
-    QRSolve(A, eigenVects, eigenVals, numIters, epsilon);
+    QRSolve(A, eigenVects, numIters, epsilon);
 
     printf("\nEigenvalues:\n\n");
     for (int i = 0; i < A->rows; i++) {
