@@ -14,7 +14,7 @@ void test_solve_qr(const char *matrix_filename){
     eigenVects->cols = A->cols;
     eigenVects->data = malloc( eigenVects->rows * eigenVects->cols * sizeof( eigenVects->data ) );
 
-    int numIters = 65;
+    int numIters = 100;
     double epsilon = 0.000000001;
 
     QRSolve(A, eigenVects, numIters, epsilon);
