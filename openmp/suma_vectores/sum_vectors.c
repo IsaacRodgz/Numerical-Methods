@@ -2,7 +2,17 @@
 #include <stdio.h>
 #include <omp.h>
 
-//export OMP_NUM_THREADS=4
+int compare(double* a, double* b, int n){
+
+    for(int i = 0; i < n; i++){
+
+        if( a[i] != b[i] )
+            return 0;
+    }
+
+
+    return 1;
+}
 
 int main(int argc, char const *argv[]){
 
@@ -17,6 +27,11 @@ int main(int argc, char const *argv[]){
     double* a = malloc(size*sizeof(double));
 	double* b = malloc(size*sizeof(double));
     double* c = malloc(size*sizeof(double));
+    double* d = malloc(size*sizeof(double));
+
+    for( int i = 0 ; i < size ; i++ ){
+        d[i]=a[i]+b[i];
+    }
 
 	double t_ini = omp_get_wtime();
 
@@ -27,11 +42,16 @@ int main(int argc, char const *argv[]){
 
 	double t_fin = omp_get_wtime();
 
-    printf("\nDuración de la operación: %f segundos con vectores de tamaño %d\n\n", t_fin - t_ini, size);
+    // Verifica que ambas soluciones son correctas
+    if( compare(c, d, size) == 0 )
+        printf("\nError in parallel operation\n\n");
+    else
+        printf("\nDuración de la operación: %f segundos con vectores de tamaño %d\n\n", t_fin - t_ini, size);
 
     free(a);
     free(b);
     free(c);
+    free(d);
 
 	return 0;
 }

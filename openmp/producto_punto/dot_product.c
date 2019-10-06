@@ -14,7 +14,8 @@ int main(int argc, char const *argv[]){
 
     double* a = malloc(size*sizeof(double));
 	double* b = malloc(size*sizeof(double));
-    double sum;
+    double sum = 0;
+    double sum2 = 0;
 
 	double t_ini = omp_get_wtime();
 
@@ -24,8 +25,16 @@ int main(int argc, char const *argv[]){
     }
 
 	double t_fin = omp_get_wtime();
+    
+    for( int i = 0 ; i < size ; i++ ){
+        sum2 += a[i]*b[i];
+    }
 
-    printf("\nDuración de la operación: %f segundos con vectores de tamaño %d\n\n", t_fin - t_ini, size);
+    // Verifica que ambas soluciones son correctas
+    if( sum != sum2 )
+        printf("\nError in parallel operation\n\n");
+    else
+        printf("\nDuración de la operación: %f segundos con vectores de tamaño %d\n\n", t_fin - t_ini, size);
 
     free(a);
     free(b);
