@@ -7,8 +7,6 @@ Date: 2019-10-15
 #define _interp_h
 #include "interp.h"
 
-void swap(double** a, double** b);
-
 void newton_interp(double* xis, double* fis, int n );
 
 #endif
