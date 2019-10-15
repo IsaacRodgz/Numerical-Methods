@@ -1,42 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../solve_matrix_direct.h"
-#include "../matrix_struct.h"
+#include "../interp.h"
 
-void test_upper_triag(const char *matrix_filename, const char *vector_filename){
+void test_newton(const char *matrix_filename){
 
-    Matrix *A;
-    Matrix *b;
-    Matrix *x_solve;
+    double x[] = {0, 1, 2, 3, 5};
+    double f[] = {-1, 1, 9, 29, 129};
+    int n = 5;
 
-    printf("\nRead matrix A");
-    A = read_matrix(matrix_filename, 1);
-    print_matrix(A);
-
-    printf("\nRead vector b");
-    b = read_matrix(vector_filename, 1);
-    print_matrix(b);
-
-    x_solve = solve_upper_triang(A, b, 0);
-
-    printf("\n-----------------------------------------------------------\n\n");
-
-    printf("\nSolution of upper triangular system, x_solve:\n");
-    print_matrix(x_solve);
-
-    printf("\nComparing A*x_solve with b...\n");
-    if(equals(b, multiply(A, x_solve), 0.0000000001) == 0)
-        printf("\nTest FAILED. A * x_solve != b for given A and b.\n\n");
-    else
-        printf("\nTest PASSED. A * x_solve = b for given A and b.\n\n");
-
-    printf("-----------------------------------------------------------\n\n");
-
-    printf("Determinant of A: %f\n\n", diagonal_determinant(A));
+    newton_interp(x, f, n);
 }
 
 void main(int argc, char* argv[]){
-
+/*
     if(argc==1){
 
         printf("\nerror: Two missing arguments are required: /path/to/matrix, /path/to/vector\n\n");
@@ -51,4 +27,8 @@ void main(int argc, char* argv[]){
 
         test_upper_triag(argv[1], argv[2]);
     }
+*/
+
+    test_newton("data.txt");
+
 }
