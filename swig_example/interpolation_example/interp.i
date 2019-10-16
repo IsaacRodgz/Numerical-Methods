@@ -20,4 +20,11 @@ import_array();
     }
 %}
 
+%inline %{
+    void lagrange_interp(int n1, double* xis, int n2, double* fis, int n3, double* pts, int n4, double* yis) {
+
+        lagrange_interp_t(n1, xis, fis, n3, pts, yis);
+    }
+%}
+
 /*%include "src/interp.h"*/

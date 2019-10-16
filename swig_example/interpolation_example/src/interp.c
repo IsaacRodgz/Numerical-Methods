@@ -40,3 +40,25 @@ void newton_interp_t(int n, double* xis, double* fis, int m, double* pts, double
 
     free(coeffs);
 }
+
+void lagrange_interp_t(int n, double* xis, double* fis, int m, double* pts, double* yis){
+
+    for (int k = 0; k < m; k++) {
+
+        yis[k] = 0;
+
+        for (int i = 0; i < n; i++) {
+
+            double term = fis[i];
+
+            for (int j = 0; j <= n ; j++) {
+
+                if ( i != j ) {
+                    term = term*(pts[k] - xis[j])/(xis[i] - xis[j]);
+                }
+            }
+
+            yis[k] += term;
+        }
+    }
+}

@@ -65,4 +65,7 @@ class _SwigNonDynamicMeta(type):
 def newton_interp(n1, n2, n3, n4):
     return _interp1.newton_interp(n1, n2, n3, n4)
 
+def lagrange_interp(n1, n2, n3, n4):
+    return _interp1.lagrange_interp(n1, n2, n3, n4)
+
 
