@@ -10,9 +10,9 @@ Date: 2019-10-15
 #define TRUE 1
 #define FALSE 0
 
-void newton_interp(int n, double* xis, double* fis, double* coeffs){
+void newton_interp_t(int n, double* xis, double* fis, int m, double* pts, double* yis){
 
-    //double* coeffs = malloc( n * sizeof *coeffs );
+    double* coeffs = malloc( n * sizeof *coeffs );
 
     for (int i = 0; i < n; i++) {
         coeffs[i] = fis[i];
@@ -25,7 +25,18 @@ void newton_interp(int n, double* xis, double* fis, double* coeffs){
             coeffs[i] = ( coeffs[j] - coeffs[i] ) / ( xis[j] - xis[i] );
         }
     }
+
+    for (int i = 0; i < m; i++) {
+
+        yis[i] = 0.0;
+        double x_temp = 1.0;
+
+        for(int j = 0; j < n; j++){
+
+            yis[i] += coeffs[j]*x_temp;
+            x_temp *= (pts[i] - xis[j]);
+        }
+    }
+
+    free(coeffs);
 }
-
-
-
