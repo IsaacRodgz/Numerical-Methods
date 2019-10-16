@@ -8,7 +8,21 @@ void test_newton(const char *matrix_filename){
     double f[] = {-1, 1, 9, 29, 129};
     int n = 5;
 
-    newton_interp(x, f, n);
+    double* coeffs;
+
+    coeffs = newton_interp(x, f, n);
+
+    printf("\n");
+    for (int i = 0; i < n; i++) {
+        printf("%lf ", coeffs[i]);
+    }
+    printf("\n");
+
+    double xp = 4.0;
+
+    double pn = newton_eval(coeffs, x, n, xp);
+
+    printf("\nPn(%lf) = %lf\n\n", xp, pn);
 }
 
 void main(int argc, char* argv[]){

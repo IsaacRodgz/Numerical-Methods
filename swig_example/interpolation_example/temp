@@ -1,0 +1,23 @@
+interp.i
+
+%apply (int DIM1, double* IN_ARRAY1) {(int n, double* coeffs), (int m, double* xis)};
+
+interp.c
+
+double newton_eval(int n, double* coeffs, int m, double* xis, double x){
+
+    double pn = 0.0;
+    double x_temp = 1.0;
+
+    for(int i = 0; i < n; i++){
+        
+        pn += coeffs[i]*x_temp;
+        x_temp *= (x - xis[i]);
+    }
+
+    return pn;
+}
+
+interp.h
+
+double newton_eval(int n, double* coeffs, int m, double* xis, double x);
