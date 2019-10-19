@@ -97,7 +97,7 @@ void hermite_interp_t(int n, double* xis, double* fis,  double* fpis, int m, dou
             diffs[i][j] = (diffs[i][j-1] - diffs[i-1][j-1]) / (z[i] - z[i-j]);
         }
     }
-
+/*
     printf("\n");
     for (int i = 0; i < 2*n; i++) {
         for (int j = 0; j < 2*n; j++){
@@ -106,7 +106,7 @@ void hermite_interp_t(int n, double* xis, double* fis,  double* fpis, int m, dou
         printf("\n");
     }
     printf("\n");
-
+*/
     for (int i = 0; i < m; i++) {
 
         yis[i] = diffs[0][0];
@@ -121,6 +121,9 @@ void hermite_interp_t(int n, double* xis, double* fis,  double* fpis, int m, dou
             yis[i] += diffs[2*j][2*j]*x_temp;
 
         }
+
+        x_temp *= (pts[i] - xis[n-1]);
+        yis[i] += diffs[2*n-1][2*n-1]*x_temp;
     }
 
     free(diffs[0]);
