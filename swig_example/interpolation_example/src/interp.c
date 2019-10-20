@@ -136,7 +136,7 @@ void newton_piecewise_interp_t(int n, double* xis, double* fis, int m, double* p
 
         for (int i = 4*k + 1; i < 4*k + 4; i++) {
 
-            for (int j = 0; j <= i-1 ; j++) {
+            for (int j = 4*k; j <= i-1 ; j++) {
 
                 coeffs[i] = ( coeffs[j] - coeffs[i] ) / ( xis[j] - xis[i] );
             }
@@ -158,7 +158,7 @@ void newton_piecewise_interp_t(int n, double* xis, double* fis, int m, double* p
                     x_temp *= (pts[i] - xis[j]);
                 }
 
-                continue;
+                break;
             }
         }
     }
