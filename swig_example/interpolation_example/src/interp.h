@@ -13,4 +13,6 @@ void lagrange_interp_t(int n, double* xis, double* fis, int m, double* pts, doub
 
 void hermite_interp_t(int n, double* xis, double* fis,  double* fpis, int m, double* pts, double* yis);
 
+void newton_piecewise_interp_t(int n, double* xis, double* fis, int m, double* pts, double* yis);
+
 #endif

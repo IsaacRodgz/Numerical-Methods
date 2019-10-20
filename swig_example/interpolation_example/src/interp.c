@@ -97,16 +97,7 @@ void hermite_interp_t(int n, double* xis, double* fis,  double* fpis, int m, dou
             diffs[i][j] = (diffs[i][j-1] - diffs[i-1][j-1]) / (z[i] - z[i-j]);
         }
     }
-/*
-    printf("\n");
-    for (int i = 0; i < 2*n; i++) {
-        for (int j = 0; j < 2*n; j++){
-            printf("%10lf", diffs[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-*/
+
     for (int i = 0; i < m; i++) {
 
         yis[i] = diffs[0][0];
@@ -129,4 +120,48 @@ void hermite_interp_t(int n, double* xis, double* fis,  double* fpis, int m, dou
     free(diffs[0]);
     free(diffs);
     free(z);
+}
+
+void newton_piecewise_interp_t(int n, double* xis, double* fis, int m, double* pts, double* yis){
+
+    int pieces = n/4;
+
+    double* coeffs = malloc( n * sizeof *coeffs );
+
+    for (int k = 0; k < pieces; k++) {
+
+        for (int i = 4*k; i < 4*k + 4; i++) {
+            coeffs[i] = fis[i];
+        }
+
+        for (int i = 4*k + 1; i < 4*k + 4; i++) {
+
+            for (int j = 0; j <= i-1 ; j++) {
+
+                coeffs[i] = ( coeffs[j] - coeffs[i] ) / ( xis[j] - xis[i] );
+            }
+        }
+    }
+
+    for (int i = 0; i < m; i++) {
+
+        for (int k = 0; k < pieces; k++) {
+
+            if ( pts[i] <= xis[4*k + 3] ) {
+
+                yis[i] = 0.0;
+                double x_temp = 1.0;
+
+                for(int j = 4*k; j < 4*k + 4; j++){
+
+                    yis[i] += coeffs[j]*x_temp;
+                    x_temp *= (pts[i] - xis[j]);
+                }
+
+                continue;
+            }
+        }
+    }
+
+    free(coeffs);
 }
