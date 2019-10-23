@@ -1,0 +1,32 @@
+# Interpolación
+
+## Uso
+
+Codigo C en carpeta /src:
+
+* interp.c
+* interp.h
+
+- Se pueden ejecutar los métodos mediante C, haciendo uso de archivo src/test.c
+
+- Importanto biblioteca interp1.py en una consola de python
+
+## Example
+
+* Con C
+
+> gcc test.c interp.c -o test && ./test
+
+* COn python
+
+> import interp1
+> interp1.newton_interp( xis, f(xis), x_sample, len(x_sample) )
+
+## Built With
+
+* [C11] en Ubuntu 16.04 LTS
+* Swig
+
+## Authors
+
+* **Isaac Rodríguez Bribiesca**
