@@ -9,6 +9,8 @@ Date: 2019-10-15
 
 void gregory_forward_interp_t(int n, double* xis, double* fis, int m, double* pts, double* yis);
 
+void gregory_backward_interp_t(int n, double* xis, double* fis, int m, double* pts, double* yis);
+
 /*
 void newton_interp_t(int n, double* xis, double* fis, int m, double* pts, double* yis);
 

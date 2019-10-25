@@ -2,18 +2,29 @@
 #include "interp2.h"
 
 int main(int argc, char const *argv[]) {
+    /*
+    int n = 4;
+    double x[] = {45, 50, 55, 60};
+    double f[] = {0.7071, 0.766, 0.8192, 0.866};
 
-    int n = 3;
-    double x[] = {1.3, 1.6, 1.9};
-    double f[] = {0.620086, 0.4554022, 0.2818186};
-    double fp[] = {-0.5220232, -0.5698959, -0.5811571};
+    int m = 3;
+    double p[] = {52, 56, 58};
+
+    double y[3] = {0.0, 0.0, 0.0};
+
+    gregory_forward_interp_t(n, x, f, m, p, y);
+    */
+
+    int n = 5;
+    double x[] = {1891, 1901, 1911, 1921, 1931};
+    double f[] = {46, 66, 81, 93, 101};
 
     int m = 1;
-    double p[] = {1.5};
+    double p[] = {1925};
 
     double y[1] = {0.0};
 
-    gregory_forward_interp_t(n, x, f, m, p, y);
+    gregory_backward_interp_t(n, x, f, m, p, y);
 
     printf("\n");
     for (int i = 0; i < m; i++) {
