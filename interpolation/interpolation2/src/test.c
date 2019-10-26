@@ -13,7 +13,7 @@ int main(int argc, char const *argv[]) {
     double y[3] = {0.0, 0.0, 0.0};
 
     gregory_forward_interp_t(n, x, f, m, p, y);
-    */
+
 
     int n = 5;
     double x[] = {1891, 1901, 1911, 1921, 1931};
@@ -25,10 +25,23 @@ int main(int argc, char const *argv[]) {
     double y[1] = {0.0};
 
     gregory_backward_interp_t(n, x, f, m, p, y);
+    */
+
+    int n = 5;
+    double x[] = {0, 4, 8, 12, 16};
+    double f[] = {14, 24, 32, 35, 40};
+
+    int m = 1;
+    double p[] = {9};
+
+    double y[1] = {0.0};
+
+    //gauss_forward_interp_t(n, x, f, m, p, y);
+    gauss_backward_interp_t(n, x, f, m, p, y);
 
     printf("\n");
     for (int i = 0; i < m; i++) {
-        printf("%lf ", y[i]);
+        printf("%.17g ", y[i]);
     }
     printf("\n\n");
 
