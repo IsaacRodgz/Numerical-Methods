@@ -165,3 +165,64 @@ void gauss_backward_interp_t(int n, double* xis, double* fis, int m, double* pts
     free(diffs[0]);
     free(diffs);
 }
+
+void stirling_interp_t(int n, double* xis, double* fis, int m, double* pts, double* yis) {
+
+    double** diffs = malloc( n * sizeof *diffs );
+    diffs[0] = malloc( n*n * sizeof **diffs );
+    for (int i = 1; i < n; i++) {
+        diffs[i] = diffs[i-1] + n;
+    }
+
+    for (int i = 0; i < n; i++) {
+        diffs[i][0] = fis[i];
+    }
+
+    for (int i = 1; i < n; i++) {
+
+        for (int j = 0; j < n-i; j++) {
+
+            diffs[j][i] = diffs[j+1][i-1] - diffs[j][i-1];
+        }
+    }
+
+    for (int i = 0; i < m; i++) {
+
+        double p = (pts[i] - xis[n/2])/(xis[1] - xis[0]);
+        double p_accum1 = p;
+        double p_accum2 = 1.0;
+        double fact = 1.0;
+        double k = 2;
+        double l = 1;
+
+        yis[i] = diffs[n/2][0] + (p*(diffs[(n-1)/2][1] + diffs[(n-2)/2][1]))/2;
+
+        for (int j = 2; j < n; j++) {
+
+            fact *= j;
+
+            if ( j%2 == 1 ) {
+
+                if ( k != 2 )
+                    p_accum1 *= ( pow(p, k) - pow(k-1, 2) );
+                else
+                    p_accum1 *= ( pow(p, 2) - pow(k-1, 2) );
+
+                k += 1;
+
+                yis[i] += ((p_accum1/2)*(diffs[(n-j)/2][j] + diffs[(n-j-1)/2][j]))/fact;
+            }
+
+            else {
+
+                p_accum2 *= ( pow(p, 2) - pow(l-1, 2) );
+                l += 1;
+
+                yis[i] += (p_accum2*diffs[(n-j)/2][j])/fact;
+            }
+        }
+    }
+
+    free(diffs[0]);
+    free(diffs);
+}

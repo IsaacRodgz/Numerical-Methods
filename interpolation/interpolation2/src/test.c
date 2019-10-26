@@ -37,7 +37,8 @@ int main(int argc, char const *argv[]) {
     double y[1] = {0.0};
 
     //gauss_forward_interp_t(n, x, f, m, p, y);
-    gauss_backward_interp_t(n, x, f, m, p, y);
+    //gauss_backward_interp_t(n, x, f, m, p, y);
+    stirling_interp_t(n, x, f, m, p, y);
 
     printf("\n");
     for (int i = 0; i < m; i++) {
