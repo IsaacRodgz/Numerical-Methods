@@ -1,0 +1,17 @@
+# Integración numérica
+
+## Uso
+
+Dentro de cada carpeta ejecutar archivo test.c
+
+> gcc test.c ../integration.c -o test -lm && ./test
+
+El resultado que regresa es la evaluación de la integral de la función f(x) = sin(x + 0.5) en el intervalo [0, 4*pi] para n = 20, 100, 1000.
+
+## Built With
+
+* [C11] en Ubuntu 16.04 LTS
+
+## Authors
+
+* **Isaac Rodríguez Bribiesca**
