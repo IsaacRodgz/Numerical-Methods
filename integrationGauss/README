@@ -1,0 +1,20 @@
+# Integración numérica Gauss-Legendre
+
+## Uso
+
+Dentro de cada carpeta ejecutar archivo test.c
+
+> gcc integration.c test.c -o run -lm && ./run
+
+El resultado que regresa es:
+
+* La evaluación de la integral de la función f(x) = 1/(1+x^2) en el intervalo [-1, 1] para n = 1, 2, 3, 4.
+* La evaluación de la integral de la función f(x) = sqrt(1+cos^2(x)) en el intervalo [1, 2] para n = 1, 2, 3, 4.
+
+## Built With
+
+* [C11] en Ubuntu 16.04 LTS
+
+## Authors
+
+* **Isaac Rodríguez Bribiesca**

@@ -2,30 +2,15 @@
 
 ## Uso
 
-Codigo C en carpeta /src:
+Dentro de cada carpeta ejecutar archivo test.c
 
-* interp2.c
-* interp2.h
+> gcc test.c ../integration.c -o test -lm && ./test
 
-- Se pueden ejecutar los métodos mediante C, haciendo uso de archivo src/test.c
-
-- Importanto biblioteca interp2.py en una consola de python
-
-## Example
-
-* Con C
-
-> gcc test.c interp2.c -o test && ./test
-
-* Con python
-
-> import interp2
-> interp2.gregory_forward_interp( xis, f(xis), x_sample, len(x_sample) )
+El resultado que regresa es la evaluación de la integral de la función f(x) = sin(x + 0.5) en el intervalo [0, 4*pi] para n = 20, 100, 1000.
 
 ## Built With
 
 * [C11] en Ubuntu 16.04 LTS
-* Swig
 
 ## Authors
 
