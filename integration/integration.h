@@ -27,4 +27,8 @@ double sin_x(double x);
 
 double sin_sqr_x(double x);
 
+double f1(double x);
+
+double f2(double x);
+
 #endif

@@ -38,6 +38,7 @@ double simpson3_rule( double (* f)(double), double x_left, double x_right, int i
             integral += 2*f(x_left + i*delta);
         else
             integral += 4*f(x_left + i*delta);
+
     }
 
     integral *= (delta/3);
@@ -50,6 +51,9 @@ double simpson8_rule( double (* f)(double), double x_left, double x_right, int i
     double delta = (x_right - x_left)/interval_size;
 
     double integral = f(x_left) +  f(x_right);
+
+    //integral += 3*f(x_left + delta);
+    //integral += 3*f(x_left + 2*delta);
 
     for (int i = 1; i < interval_size; i++) {
 
@@ -148,4 +152,14 @@ double sin_x(double x) {
 double sin_sqr_x(double x) {
 
     return sin(x)*sin(x);
+}
+
+double f1(double x) {
+
+    return 1.0/(1.0+(x*x));
+}
+
+double f2(double x) {
+
+    return sqrt( 1 + cos(x)*cos(x) );
 }
