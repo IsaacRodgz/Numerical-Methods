@@ -8,10 +8,6 @@ using namespace std;
 
 void test_Quadratic(){
 
-    /*
-        Linear model
-    */
-
     int n = 100;
 
     Linear lm(n);
