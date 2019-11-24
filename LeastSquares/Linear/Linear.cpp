@@ -1,4 +1,4 @@
-#include "LeastSquares.h"
+#include "Linear.hpp"
 
 #include <bits/stdc++.h>
 #include <string.h>
@@ -6,14 +6,16 @@
 
 using namespace std;
 
-LeastSquares::LeastSquares(int sizep) : size(sizep) {}
+Linear::Linear(int sizep) : size(sizep) {}
 
-double LeastSquares::f(double x){
+// Linear model
+
+double Linear::f_linear(double x){
 
     return 1.37*x + 2.43;
 }
 
-void LeastSquares::create_data(){
+void Linear::create_linear_data(){
 
     default_random_engine generator;
     random_device rd;
@@ -23,12 +25,12 @@ void LeastSquares::create_data(){
     for (int i = 0; i < size; i++) {
 
         x.push_back(dis(gen));
-        normal_distribution<double> distribution( f(x[i]) , 4.0 );
+        normal_distribution<double> distribution( f_linear(x[i]) , 3.0 );
         y.push_back(distribution(generator));
     }
 }
 
-void LeastSquares::fill_system(){
+void Linear::fill_linear_system(){
 
     A.resize(2, vector<double>(2, 0));
     b.resize(2, 0);
@@ -46,7 +48,7 @@ void LeastSquares::fill_system(){
     A[1][1] = size;
 }
 
-void LeastSquares::solve(){
+void Linear::solve_linear(){
 
     coeffs.resize(2, 0);
     vector<vector<double> > A_inv(2, vector<double>(2, 0));

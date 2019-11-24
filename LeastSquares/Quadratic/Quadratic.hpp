@@ -1,12 +1,12 @@
-#ifndef LEAST_SQUARES_H
-#define LEAST_SQUARES_H
+#ifndef QUADRATIC_HPP
+#define QUADRATIC_HPP
 
 #include <bits/stdc++.h>
 #include <string.h>
 
 using namespace std;
 
-class LeastSquares {
+class Quadratic {
 
 public:
 
@@ -18,15 +18,15 @@ public:
     vector<double> y;
     int size;
 
-    LeastSquares(int sizep);
+    Quadratic(int sizep);
 
-    double f(double x);
+    double f_quadratic(double x);
 
-    void create_data();
+    void create_quadratic_data();
 
-    void fill_system();
+    void fill_quadratic_system();
 
-    void solve();
+    void solve_quadratic();
 
 };
 

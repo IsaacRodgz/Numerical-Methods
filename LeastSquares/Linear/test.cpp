@@ -1,18 +1,22 @@
 #include <iostream>
 #include<bits/stdc++.h>
-#include "LeastSquares.h"
+#include "Linear.hpp"
 
 using namespace std;
 
-// g++ -std=c++11 LeastSquares.cpp test.cpp -o test && ./test
+// g++ -std=c++11 Linear.cpp test.cpp -o test && ./test
 
-void test_LeastSquares(){
+void test_Quadratic(){
+
+    /*
+        Linear model
+    */
 
     int n = 100;
 
-    LeastSquares lm(n);
+    Linear lm(n);
 
-    lm.create_data();
+    lm.create_linear_data();
 
     /*
     for (int i = 0; i < n; i++) {
@@ -21,9 +25,9 @@ void test_LeastSquares(){
     }
     */
 
-    lm.fill_system();
+    lm.fill_linear_system();
 
-    lm.solve();
+    lm.solve_linear();
 
     cout << "\nRegression line: " << lm.coeffs[0] << "x + " << lm.coeffs[1] << "\n" << endl;
 
@@ -31,7 +35,7 @@ void test_LeastSquares(){
 
 int main(int argc, char const *argv[]) {
 
-    test_LeastSquares();
+    test_Quadratic();
 
     return 0;
 }
