@@ -8,18 +8,9 @@ using namespace std;
 
 void test_Quadratic(){
 
-    int n = 100;
+    Quadratic qm = Quadratic();
 
-    Quadratic qm(n);
-
-    qm.create_quadratic_data();
-
-    /*
-    for (int i = 0; i < n; i++) {
-
-        cout << qm.x[i] << " " << qm.y[i] << endl;
-    }
-    */
+    qm.read_quadratic_data("quadratic_data.txt");
 
     qm.fill_quadratic_system();
 

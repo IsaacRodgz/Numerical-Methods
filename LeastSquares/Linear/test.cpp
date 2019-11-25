@@ -6,20 +6,11 @@ using namespace std;
 
 // g++ -std=c++11 Linear.cpp test.cpp -o test && ./test
 
-void test_Quadratic(){
+void test_Lineal(){
 
-    int n = 100;
+    Linear lm = Linear();
 
-    Linear lm(n);
-
-    lm.create_linear_data();
-
-    /*
-    for (int i = 0; i < n; i++) {
-
-        cout << lm.x[i] << " " << lm.y[i] << endl;
-    }
-    */
+    lm.read_linear_data("lineal_data.txt");
 
     lm.fill_linear_system();
 
@@ -31,7 +22,7 @@ void test_Quadratic(){
 
 int main(int argc, char const *argv[]) {
 
-    test_Quadratic();
+    test_Lineal();
 
     return 0;
 }

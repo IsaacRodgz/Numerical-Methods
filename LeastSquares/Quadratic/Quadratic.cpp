@@ -6,8 +6,6 @@
 
 using namespace std;
 
-Quadratic::Quadratic(int sizep) : size(sizep) {}
-
 double Quadratic::f_quadratic(double x){
 
     return 0.3*x*x + 1.37*x + 5.43;
@@ -15,17 +13,48 @@ double Quadratic::f_quadratic(double x){
 
 void Quadratic::create_quadratic_data(){
 
+    size = 32;
+
     default_random_engine generator;
     random_device rd;
     mt19937 gen(rd());
-    uniform_real_distribution<> dis(-5, 5);
 
-    for (int i = 0; i < size; i++) {
+    double xi = -5;
+    double step = 10.0/double(size);
+    int i = 0;
 
-        x.push_back(dis(gen));
+    while (xi < 5) {
+
+        x.push_back(xi);
         normal_distribution<double> distribution( f_quadratic(x[i]) , 1.0 );
         y.push_back(distribution(generator));
+
+        xi += step;
+        i++;
     }
+}
+
+void Quadratic::read_quadratic_data(string data_file){
+
+    ifstream file(data_file);
+    string line;
+
+    double val_x;
+    double val_y;
+
+    while ( getline(file, line) ) {
+
+        stringstream ss(line);
+
+        ss >> val_x >> val_y;
+
+        x.push_back(val_x);
+        y.push_back(val_y);
+
+    }
+
+    file.close();
+    size = x.size();
 }
 
 void Quadratic::fill_quadratic_system(){

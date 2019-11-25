@@ -18,11 +18,11 @@ public:
     vector<double> y;
     int size;
 
-    Linear(int sizep);
-
     double f_linear(double x);
 
     void create_linear_data();
+
+    void read_linear_data(string data_file);
 
     void fill_linear_system();
 

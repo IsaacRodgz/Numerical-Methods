@@ -18,11 +18,11 @@ public:
     vector<double> y;
     int size;
 
-    Quadratic(int sizep);
-
     double f_quadratic(double x);
 
     void create_quadratic_data();
+
+    void read_quadratic_data(string data_file);
 
     void fill_quadratic_system();
 
