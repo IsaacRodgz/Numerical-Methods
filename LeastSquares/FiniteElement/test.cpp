@@ -8,7 +8,7 @@ using namespace std;
 
 void test_FE(){
 
-    FiniteElement fem(1.0, 16);
+    FiniteElement fem(0.01, 16);
 
     fem.read_linear_data("quadratic_data.txt");
 
@@ -16,7 +16,7 @@ void test_FE(){
 
     fem.solve_fem();
 
-    //cout << "\nNodes and coefficients found:\n" << endl;
+    cout << "\nNodes and coefficients found:\n" << endl;
 
     for (int i = 0; i < fem.coeffs.size(); i++) {
 
