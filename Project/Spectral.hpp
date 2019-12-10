@@ -18,7 +18,11 @@ public:
 
     vector< vector<double> > graph;
 
-    vector< vector<double> > lapacian;
+    vector< vector<double> > laplacian;
+
+    vector< vector<double> > eigenVects;
+
+    vector< vector<double> > eigenVals;
 
     void readData(int num_cols, string data_file);
 
@@ -36,11 +40,13 @@ public:
 
     void buildLaplacian();
 
-    void computeEigen();
+    int is_diagonal(vector< vector<double> > A);
 
-    void subspaceSolver(vector< vector<double> > A, vector< vector<double> > FI, vector< vector<double> > LA, int num_iters, double epsilon, int k);
+    void computeEigen(int numEigen, int numIters, double epsilon);
 
-    void QRFactor(vector< vector<double> > A, vector< vector<double> > Q, vector< vector<double> > R);
+    void subspaceSolver(int num_iters, double epsilon, int k);
+
+    void QRFactor(vector< vector<double> > &A, vector< vector<double> > &Q, vector< vector<double> > &R);
 
 };
 

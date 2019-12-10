@@ -17,7 +17,7 @@ void test_Spectral(){
 
     spectral.buildLaplacian();
 
-    spectral.computeEigen();
+    spectral.computeEigen(4, 10000, 0.000001);
 
 }
 
