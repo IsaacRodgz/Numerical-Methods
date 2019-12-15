@@ -92,21 +92,42 @@ void Spectral::buildLaplacian(){
 
     laplacian.resize(graph.size(), vector<double>(graph.size()));
 
+    // L_rw laplacian
+    /*
     for (int i = 0; i < graph.size(); i++) {
 
         for (int j = 0; j < graph.size(); j++) {
 
             if ( i == j ) {
 
-                laplacian[i][j] = graph[i][j] - diag[i];
+                laplacian[i][j] = 1 - graph[i][j]/diag[i];
             }
 
             else {
 
-                laplacian[i][j] = graph[i][j];
+                laplacian[i][j] = -graph[i][j]/diag[i];
             }
         }
     }
+    */
+    // L_sym laplacian
+
+    for (int i = 0; i < graph.size(); i++) {
+
+        for (int j = 0; j < graph.size(); j++) {
+
+            if ( i == j ) {
+
+                laplacian[i][j] = 1 - graph[i][j]/diag[i];
+            }
+
+            else {
+
+                laplacian[i][j] = -graph[i][j]/(sqrt(diag[i]*diag[j]));
+            }
+        }
+    }
+
 }
 
 // K-means algorithm
@@ -365,23 +386,6 @@ int Spectral::getNearestCenter(vector<double> p){
     return currentCluster;
 }
 
-// print cluster ID's
-
-void Spectral::printClusters(){
-
-    for (int i = 0; i < data.size(); i++) {
-
-        for (int j = 0; j < data[0].size(); j++) {
-
-            cout << data[i][j] << ", ";
-        }
-
-        cout << " ->  " << clusterIDs[i];
-
-        cout << endl;
-    }
-}
-
 // Verify if A is diagonal
 
 int Spectral::is_diagonal(vector< vector<double> > A, double epsilon){
@@ -432,7 +436,7 @@ void Spectral::transformData(int numEigen){
 
     // Find indexes of eigenvectors to be used
 
-    for (int i = 0; i < numEigen; i++) {
+    for (int i = 1; i < numEigen+1; i++) {
 
         int pos = -1;
 
@@ -464,7 +468,16 @@ void Spectral::transformData(int numEigen){
             printf("%10lf ", data[i][j]);
         }
 
-        printf("%10lf ", eigenVects[i][indexes[0]]);
+        if (eigenVects[i][indexes[1]] > 0) {
+
+            printf("%10lf ", 1.0);
+        }
+
+        else {
+
+            printf("%10lf ", 0.0);
+        }
+
 
         cout << endl;
     }
@@ -1299,6 +1312,21 @@ void Spectral::printLaplacian(){
     }
 
     cout << endl;
+}
+
+void Spectral::printClusters(){
+
+    for (int i = 0; i < data.size(); i++) {
+
+        for (int j = 0; j < data[0].size(); j++) {
+
+            cout << data[i][j] << " ";
+        }
+
+        cout << " " << clusterIDs[i];
+
+        cout << endl;
+    }
 }
 
 /*
