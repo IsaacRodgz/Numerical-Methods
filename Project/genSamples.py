@@ -15,11 +15,12 @@ means = 2, 4, 6, 8
 stdevs = 0.3, 0.3, 0.3, 0.3
 dist = pd.DataFrame(np.random.normal(loc=means, scale=stdevs, size=(50, 4)), columns=['a', 'b', 'c', 'd'])
 
-#fig, ax = plt.subplots()
-#dist.plot.kde(ax=ax, legend=False)
-#dist.plot.hist(ax=ax, bins=50, alpha=0.5)
-#plt.show()
+fig, ax = plt.subplots()
+dist.plot.kde(ax=ax, legend=False)
+dist.plot.hist(ax=ax, bins=50, alpha=0.5)
+plt.show()
 
+'''
 s1 = dist['a'].tolist()
 s2 = dist['b'].tolist()
 s3 = dist['c'].tolist()
@@ -31,3 +32,4 @@ with open("data.txt", 'w') as f:
 
     for n in s:
         f.write(str(n)+"\n")
+'''
