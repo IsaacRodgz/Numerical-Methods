@@ -31,6 +31,12 @@ public:
     vector< vector<double> > eigenVals;
     vector<double> eigenVals_vect;
 
+    // Cairo graphing method
+
+    void plot();
+
+    // Graph and laplacian construction methods
+
     void readData(int num_cols, string data_file);
 
     double gaussianDistance(vector<double> x1, vector<double> x2);
@@ -38,6 +44,8 @@ public:
     double norm_squared(vector<double> x);
 
     void buildGraph();
+
+    void buildLaplacian();
 
     // Print functions
 
@@ -51,15 +59,15 @@ public:
 
     void printLaplacian();
 
-    // Methods
-
-    void buildLaplacian();
+    // k-means methods
 
     void kMeans(int numIters, int numClusters);
 
     void kMeansEig(int numIters, int numClusters);
 
     int getNearestCenter(vector<double> p);
+
+    // Eigensolver methods
 
     int is_diagonal(vector< vector<double> > A, double epsilon);
 

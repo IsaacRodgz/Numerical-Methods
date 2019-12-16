@@ -13,7 +13,7 @@ data = np.concatenate((data, np.random.normal(8, 0.5, 25)))
 
 means = 2, 4, 6, 8
 stdevs = 0.3, 0.3, 0.3, 0.3
-dist = pd.DataFrame(np.random.normal(loc=means, scale=stdevs, size=(50, 4)), columns=['a', 'b', 'c', 'd'])
+dist = pd.DataFrame(np.random.normal(loc=means, scale=stdevs, size=(50, 4)), columns=['mu = 2', 'mu = 4', 'mu = 6', 'mu = 8'])
 
 fig, ax = plt.subplots()
 dist.plot.kde(ax=ax, legend=False)
